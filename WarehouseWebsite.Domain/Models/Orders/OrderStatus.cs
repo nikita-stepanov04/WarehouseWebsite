@@ -3,6 +3,7 @@
     public enum OrderStatus
     {
         None,
+        Queued,
         Delivering,
         Delivered
     }

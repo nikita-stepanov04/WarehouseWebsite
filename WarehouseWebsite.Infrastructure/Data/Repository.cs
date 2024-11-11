@@ -1,29 +1,37 @@
 ﻿using WarehouseWebsite.Domain.Interfaces;
 using WarehouseWebsite.Domain.Models;
+using WarehouseWebsite.Infrastructure.Models;
 
 namespace WarehouseWebsite.Infrastructure.Data
 {
-    internal class Repository<TEntity> : IRepository<TEntity>
+    public class Repository<TEntity> : IRepository<TEntity>
         where TEntity : BaseEntity
     {
-        public Task AddAsync(TEntity entity)
+        protected DataContext DbContext { get; }
+
+        public Repository(DataContext context)
         {
-            throw new NotImplementedException();
+            DbContext = context;
         }
 
-        public Task<TEntity> GetByIdAsync(Guid id)
+        public async Task AddAsync(TEntity entity)
         {
-            throw new NotImplementedException();
+            await DbContext.Set<TEntity>().AddAsync(entity);
+        }
+
+        public async Task<TEntity?> GetByIdAsync(Guid id)
+        {
+            return await DbContext.Set<TEntity>().FindAsync(id);
         }
 
         public void Remove(TEntity entity)
         {
-            throw new NotImplementedException();
+            DbContext.Set<TEntity>().Remove(entity);
         }
 
         public void Update(TEntity entity)
         {
-            throw new NotImplementedException();
+            DbContext.Set<TEntity>().Update(entity);
         }
     }
 }

@@ -13,5 +13,7 @@ namespace WarehouseWebsite.Domain.Models.Items
 
         [Phone]
         public string? Phone { get; set; }
+
+        public IEnumerable<Item>? Items { get; set; }
     }
 }
