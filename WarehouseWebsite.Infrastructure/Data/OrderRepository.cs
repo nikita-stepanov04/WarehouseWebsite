@@ -1,43 +1,46 @@
-﻿using WarehouseWebsite.Domain.Interfaces;
-using WarehouseWebsite.Domain.Models.Customers;
+﻿using Microsoft.EntityFrameworkCore;
+using WarehouseWebsite.Domain.Interfaces;
 using WarehouseWebsite.Domain.Models.Orders;
+using WarehouseWebsite.Domain.Filtering;
+using WarehouseWebsite.Infrastructure.Filtering;
 using WarehouseWebsite.Infrastructure.Models;
 
 namespace WarehouseWebsite.Infrastructure.Data
 {
     public class OrderRepository : Repository<Order>, IOrderRepository
     {
-        public OrderRepository(DataContext context) 
+        public OrderRepository(DataContext context)
             : base(context) { }
 
-        public Task GetAwaitingOrdersForCustomerAsync(Customer customer)
+        public async Task<IEnumerable<Order>> GetTransitedOrdersAsync(
+            FilterParameters<Order> filter, CancellationToken token)
         {
-            throw new NotImplementedException();
+            return await DbContext.Orders
+                .Include(o => o.OrderItems)
+                .Where(o => o.Status == OrderStatus.Transited)
+                .WithFilter(filter)
+                .ToListAsync(cancellationToken: token);
         }
 
-        public Task GetTransitedOrdersForCustomerAsync(Customer customer)
+        public async Task<IEnumerable<Order>> GetTransitingOrdersAsync(
+            FilterParameters<Order> filter, CancellationToken token)
         {
-            throw new NotImplementedException();
+            return await DbContext.Orders
+                .Include(o => o.OrderItems)
+                .Where(o =>  o.Status == OrderStatus.Transiting)
+                .WithFilter(filter)
+                .ToListAsync(cancellationToken: token);
         }
 
-        public Task GetTransitingOrdersForCustomerAsync(Customer customer)
+        public async Task PlaceOrderAsync(Order order)
         {
-            throw new NotImplementedException();
+            await AddAsync(order);
         }
 
-        public Task PlaceOrderAsync(Order order)
+        public void SetOrderAsTransited(Order order)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task PlaceOrderToQueueAsync(Order order)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task SetOrderAsDeliveredAsync(Order order)
-        {
-            throw new NotImplementedException();
+            order.Status = OrderStatus.Transited;
+            Update(order);
         }
     }
 }

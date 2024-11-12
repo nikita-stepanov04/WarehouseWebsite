@@ -11,6 +11,8 @@ namespace WarehouseWebsite.Domain.Models.Orders
         public decimal TotalPrice { get; set; }
 
         public Customer Customer { get; set; } = null!;
-        public IEnumerable<OrderItem>? OrderItems { get; set; }
+        public IEnumerable<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
     }
+
+    public class AwaitingOrder : Order { }
 }

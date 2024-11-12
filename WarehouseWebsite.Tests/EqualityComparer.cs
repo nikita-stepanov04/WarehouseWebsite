@@ -23,13 +23,12 @@ namespace WarehouseWebsite.Tests
                    x.Description == y.Description &&
                    x.Price == y.Price &&
                    x.Weight == y.Weight &&
-                   x.SupplierId == y.SupplierId &&
                    x.Category == y.Category;
         }
 
         public int GetHashCode(Item obj)
         {
-            return HashCode.Combine(obj.Id, obj.Name, obj.Quantity, obj.Description, obj.Price, obj.Weight, obj.SupplierId, obj.Category);
+            return HashCode.Combine(obj.Id, obj.Name, obj.Quantity, obj.Description, obj.Price, obj.Weight, obj.Category);
         }
     }
 
@@ -87,32 +86,4 @@ namespace WarehouseWebsite.Tests
             return HashCode.Combine(obj.Id, obj.ItemId, obj.OrderId, obj.Quantity, obj.Price);
         }
     }
-
-    public class SupplierEqualityComparer : IEqualityComparer<Supplier>
-    {
-        public bool Equals(Supplier? x, Supplier? y)
-        {
-            if (ReferenceEquals(x, y))
-            {
-                return true;
-            }
-
-            if (x is null || y is null)
-            {
-                return false;
-            }
-
-            return x.Id == y.Id &&
-                   x.Name == y.Name &&
-                   x.Address == y.Address &&
-                   x.Phone == y.Phone;
-        }
-
-        public int GetHashCode(Supplier obj)
-        {
-            return HashCode.Combine(obj.Id, obj.Name, obj.Address, obj.Phone);
-        }
-    }
-
-
 }

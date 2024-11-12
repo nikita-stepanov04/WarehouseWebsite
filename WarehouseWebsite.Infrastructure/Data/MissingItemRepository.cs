@@ -1,5 +1,8 @@
-﻿using WarehouseWebsite.Domain.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using WarehouseWebsite.Domain.Filtering;
+using WarehouseWebsite.Domain.Interfaces;
 using WarehouseWebsite.Domain.Models.Items;
+using WarehouseWebsite.Infrastructure.Filtering;
 using WarehouseWebsite.Infrastructure.Models;
 
 namespace WarehouseWebsite.Infrastructure.Data
@@ -9,14 +12,18 @@ namespace WarehouseWebsite.Infrastructure.Data
         public MissingItemRepository(DataContext context)
             : base(context) { }
 
-        public void AddOrUpdateMissingItemAsync(Item item, int addQuantity)
+        public async Task<IEnumerable<MissingItem>> GetItemsByFilterAsync(
+            FilterParameters<MissingItem> filter, CancellationToken token)
         {
-            throw new NotImplementedException();
-        }
-
-        public IAsyncEnumerable<MissingItem> GetByFilterAsync(Func<MissingItem, bool> filter)
-        {
-            throw new NotImplementedException();
+            return await DbContext.MissingItems
+                .Include(mi => mi.Item)
+                .Select(mi => new MissingItem()
+                {
+                    Missing = mi.Missing,
+                    Item = ItemHelper.SelectWithoutDescription(mi.Item)
+                })
+                .WithFilter(filter)
+                .ToListAsync(cancellationToken: token);
         }
     }
 }

@@ -1,10 +1,11 @@
-﻿using WarehouseWebsite.Domain.Models.Items;
+﻿using WarehouseWebsite.Domain.Filtering;
+using WarehouseWebsite.Domain.Models.Items;
 
 namespace WarehouseWebsite.Domain.Interfaces
 {
     public interface IItemRepository : IRepository<Item>
     {
-        Task<Item> GetByIdShortenAsync(Guid id);
-        IAsyncEnumerable<Item> GetByFilterAsync(Func<Item, bool> filter);
+        Task<Item?> GetByIdShortenAsync(Guid id);
+        Task<IEnumerable<Item>> GetItemsByFilterAsync(FilterParameters<Item> filter, CancellationToken token);
     }
 }

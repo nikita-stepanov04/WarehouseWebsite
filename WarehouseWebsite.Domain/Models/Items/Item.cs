@@ -20,10 +20,6 @@ namespace WarehouseWebsite.Domain.Models.Items
         [Range(0.1, 1000)]
         public double Weight { get; set; }
 
-        public Guid SupplierId { get; set; }
-
-        public Supplier? Supplier { get; set; }
-
         public ItemCategory Category { get; set; }
     }
 }

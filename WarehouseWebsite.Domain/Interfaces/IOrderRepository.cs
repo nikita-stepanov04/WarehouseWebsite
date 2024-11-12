@@ -1,17 +1,16 @@
-﻿using WarehouseWebsite.Domain.Models.Customers;
-using WarehouseWebsite.Domain.Models.Orders;
+﻿using WarehouseWebsite.Domain.Models.Orders;
+using WarehouseWebsite.Domain.Filtering;
 
 namespace WarehouseWebsite.Domain.Interfaces
 {
-    public interface IOrderRepository : IRepository<Order> 
+    public interface IOrderRepository : IRepository<Order>
     {
-        Task SetOrderAsDeliveredAsync(Order order);
+        void SetOrderAsTransited(Order order);
 
         Task PlaceOrderAsync(Order order);
-        Task PlaceOrderToQueueAsync(Order order);
 
-        Task GetTransitingOrdersForCustomerAsync(Customer customer);
-        Task GetTransitedOrdersForCustomerAsync(Customer customer);
-        Task GetAwaitingOrdersForCustomerAsync(Customer customer);
+        Task<IEnumerable<Order>> GetTransitingOrdersAsync(FilterParameters<Order> filter, CancellationToken token);
+
+        Task<IEnumerable<Order>> GetTransitedOrdersAsync(FilterParameters<Order> filter, CancellationToken token);
     }
 }

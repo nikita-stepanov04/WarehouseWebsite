@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using WarehouseWebsite.Domain.Filtering;
 using WarehouseWebsite.Domain.Interfaces;
 using WarehouseWebsite.Domain.Models.Items;
+using WarehouseWebsite.Infrastructure.Filtering;
 using WarehouseWebsite.Infrastructure.Models;
 
 namespace WarehouseWebsite.Infrastructure.Data
@@ -10,35 +12,21 @@ namespace WarehouseWebsite.Infrastructure.Data
         public ItemRepository(DataContext context) 
             : base(context) { }
 
-        public IAsyncEnumerable<Item> GetByFilterAsync(Func<Item, bool> filter)
+        public async Task<IEnumerable<Item>> GetItemsByFilterAsync(
+            FilterParameters<Item> filter, CancellationToken token)
         {
-            return DbContext.Items
-                .Where(i => filter(i))
-                .Select(i => SelectWithoutDescription(i))
-                .AsAsyncEnumerable();
+            return await DbContext.Items
+                .WithFilter(filter)
+                .Select(i => ItemHelper.SelectWithoutDescription(i))
+                .ToListAsync(cancellationToken: token);
         }
 
-        public async Task<Item> GetByIdShortenAsync(Guid id)
+        public async Task<Item?> GetByIdShortenAsync(Guid id)
         {
             return await DbContext.Items
                 .Where(i => i.Id == id)
-                .Select(i => SelectWithoutDescription(i))
+                .Select(i => ItemHelper.SelectWithoutDescription(i))
                 .FirstAsync();
-        }
-
-        private Item SelectWithoutDescription(Item i)
-        {
-            return new Item
-            {
-                Id = i.Id,
-                Name = i.Name,
-                Quantity = i.Quantity,
-                Weight = i.Weight,
-                Category = i.Category,
-                Price = i.Price,
-                Supplier = i.Supplier,
-                SupplierId = i.SupplierId
-            };
         }
     }
 }
