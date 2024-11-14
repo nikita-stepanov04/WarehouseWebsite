@@ -21,5 +21,7 @@ namespace WarehouseWebsite.Domain.Models.Items
         public double Weight { get; set; }
 
         public ItemCategory Category { get; set; }
+
+        public string? PhotoBlobId { get; set; }
     }
 }

@@ -23,7 +23,8 @@ namespace WarehouseWebsite.Tests
                    x.Description == y.Description &&
                    x.Price == y.Price &&
                    x.Weight == y.Weight &&
-                   x.Category == y.Category;
+                   x.Category == y.Category &&
+                   x.PhotoBlobId == y.PhotoBlobId;
         }
 
         public int GetHashCode(Item obj)
