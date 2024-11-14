@@ -75,42 +75,7 @@ namespace WarehouseWebsite.Tests.InfrastructureTests
             Assert.ThrowsAsync<OperationCanceledException>(async () =>
                 await orderRepository.GetTransitingOrdersAsync(
                     new FilterParameters<Order>(), cancellationTokenSource.Token));
-        }
-
-        [Test]
-        public async Task OrderRepositoryPlaceOrderAsyncAddsOrdersToDb()
-        {
-            using var context = new DataContext(GetUnitTestDbOptions());
-            var orderRepository = new OrderRepository(context);
-
-            var newOrder = new Order()
-            {
-                Id = Guids[4],
-                CustomerId = Guids[1],
-                OrderTime = new DateTime(2023, 11, 15, 10, 0, 0),
-                Status = OrderStatus.Transited,
-                TotalPrice = 68,
-                OrderItems = new List<OrderItem>
-                {
-                    new OrderItem
-                    {
-                        Id = Guids[5],
-                        OrderId = Guids[4],
-                        ItemId = Guids[2],
-                        Quantity = 4,
-                        Price = 17,
-                    }
-                }
-            };
-            await orderRepository.PlaceOrderAsync(newOrder);
-            await context.SaveChangesAsync();
-
-            Assert.That(context.Orders.Count(), Is.EqualTo(3));
-
-            var order = await orderRepository.GetByIdAsync(Guids[4]);
-
-            Assert.That(order, Is.EqualTo(newOrder).Using(new OrderEqualityComparer()));
-        }
+        }        
 
         [Test]
         public async Task OrderRepositorySetOrderAsTransitedWorks()

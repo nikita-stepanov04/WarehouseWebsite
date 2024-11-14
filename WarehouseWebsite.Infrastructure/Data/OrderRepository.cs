@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WarehouseWebsite.Domain.Interfaces;
 using WarehouseWebsite.Domain.Models.Orders;
 using WarehouseWebsite.Domain.Filtering;
 using WarehouseWebsite.Infrastructure.Filtering;
 using WarehouseWebsite.Infrastructure.Models;
+using WarehouseWebsite.Domain.Interfaces.Repositories;
 
 namespace WarehouseWebsite.Infrastructure.Data
 {
@@ -30,11 +30,6 @@ namespace WarehouseWebsite.Infrastructure.Data
                 .Where(o =>  o.Status == OrderStatus.Transiting)
                 .WithFilter(filter)
                 .ToListAsync(cancellationToken: token);
-        }
-
-        public async Task PlaceOrderAsync(Order order)
-        {
-            await AddAsync(order);
         }
 
         public void SetOrderAsTransited(Order order)

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Data;
 using WarehouseWebsite.Domain.Interfaces;
+using WarehouseWebsite.Domain.Interfaces.Repositories;
 using WarehouseWebsite.Infrastructure.Models;
 
 namespace WarehouseWebsite.Infrastructure.Data
@@ -11,6 +12,7 @@ namespace WarehouseWebsite.Infrastructure.Data
         private IItemRepository? _itemRepository;
         private IMissingItemRepository? _missingItemRepository;
         private IOrderRepository? _orderRepository;
+        private IAwaitingOrderRepository? _awaitingOrderRepository;
         private ICustomerRepository? _customerRepository;
 
         private readonly DataContext _dbContext;
@@ -27,6 +29,8 @@ namespace WarehouseWebsite.Infrastructure.Data
 
         public IOrderRepository OrderRepository => _orderRepository ??= new OrderRepository(_dbContext);
 
+        public IAwaitingOrderRepository AwaitingOrderRepository => _awaitingOrderRepository ??= new AwaitingOrderRepository(_dbContext);
+
         public ICustomerRepository CustomerRepository => _customerRepository ??= new CustomerRepository(_dbContext);
 
         public async Task BeginTransactionAsync(IsolationLevel isolationLevel,
@@ -41,17 +45,22 @@ namespace WarehouseWebsite.Infrastructure.Data
             if (_transaction != null)
             {
                 await _transaction.CommitAsync(cancellationToken);
-            }
-        }
-
-        public async Task RollbackTransactionAsync(CancellationToken cancellationToken)
-        {
-            if (_transaction != null)
-            {
-                await _transaction.RollbackAsync(cancellationToken);
+                await _transaction.DisposeAsync();
                 _transaction = null;
             }
         }
+
+        public async Task RollbackTransactionAsync()
+        {
+            if (_transaction != null)
+            {
+                await _transaction.RollbackAsync();
+                await _transaction.DisposeAsync();
+                _transaction = null;
+            }
+        }
+
+        public async Task SaveAsync() => await _dbContext.SaveChangesAsync();
 
         public async Task SaveAsync(CancellationToken cancellationToken)
         {

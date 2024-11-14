@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WarehouseWebsite.Domain.Filtering;
-using WarehouseWebsite.Domain.Interfaces;
+using WarehouseWebsite.Domain.Interfaces.Repositories;
 using WarehouseWebsite.Domain.Models.Items;
 using WarehouseWebsite.Infrastructure.Filtering;
 using WarehouseWebsite.Infrastructure.Models;

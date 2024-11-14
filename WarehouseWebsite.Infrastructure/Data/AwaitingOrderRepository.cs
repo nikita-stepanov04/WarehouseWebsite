@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WarehouseWebsite.Domain.Filtering;
 using WarehouseWebsite.Infrastructure.Filtering;
-using WarehouseWebsite.Domain.Interfaces;
 using WarehouseWebsite.Domain.Models.Orders;
 using WarehouseWebsite.Infrastructure.Models;
+using WarehouseWebsite.Domain.Interfaces.Repositories;
 
 namespace WarehouseWebsite.Infrastructure.Data
 {
@@ -20,11 +20,6 @@ namespace WarehouseWebsite.Infrastructure.Data
                     .ThenInclude(oi => oi.Item)
                 .WithFilter(filter)
                 .ToListAsync(cancellationToken: token);
-        } 
-
-        public async Task PlaceOrderToQueueAsync(AwaitingOrder order)
-        {
-            await DbContext.AwaitingOrders.AddAsync(order);
         }
     }
 }

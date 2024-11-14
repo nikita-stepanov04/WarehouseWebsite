@@ -1,4 +1,4 @@
-﻿using WarehouseWebsite.Domain.Interfaces;
+﻿using WarehouseWebsite.Domain.Interfaces.Repositories;
 using WarehouseWebsite.Domain.Models.Customers;
 using WarehouseWebsite.Infrastructure.Models;
 

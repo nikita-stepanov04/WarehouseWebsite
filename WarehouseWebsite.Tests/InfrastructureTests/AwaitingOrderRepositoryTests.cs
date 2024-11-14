@@ -41,41 +41,6 @@ namespace WarehouseWebsite.Tests.InfrastructureTests
             Assert.ThrowsAsync<OperationCanceledException>(async () =>
                 await orderRepository.GetAwaitingOrdersAsync(
                     new FilterParameters<AwaitingOrder>(), cancellationTokenSource.Token));
-        }
-
-        [Test]
-        public async Task AwaitingOrderRepositoryPlaceOrderToQueueAsyncAddsOrdersToQueue()
-        {
-            using var context = new DataContext(GetUnitTestDbOptions());
-            var orderRepository = new AwaitingOrderRepository(context);
-
-            var newOrder = new AwaitingOrder()
-            {
-                Id = Guids[4],
-                CustomerId = Guids[1],
-                OrderTime = new DateTime(2023, 11, 15, 10, 0, 0),
-                Status = OrderStatus.Awaiting,
-                TotalPrice = 68,
-                OrderItems = new List<OrderItem>
-                {
-                    new OrderItem
-                    {
-                        Id = Guids[5],
-                        OrderId = Guids[4],
-                        ItemId = Guids[2],
-                        Quantity = 4,
-                        Price = 17,
-                    }
-                }
-            };
-            await orderRepository.PlaceOrderToQueueAsync(newOrder);
-            await context.SaveChangesAsync();
-
-            Assert.That(context.Orders.Count(), Is.EqualTo(2));
-
-            var order = await orderRepository.GetByIdAsync(Guids[4]);
-
-            Assert.That(order, Is.EqualTo(newOrder).Using(new OrderEqualityComparer()));
         }         
 
         private AwaitingOrder GetAwaitingOrder() =>
