@@ -21,6 +21,9 @@ namespace WarehouseWebsite.Infrastructure.Models
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<Item>()
+                .Ignore(i => i.PhotoUrl);
+
             modelBuilder.Entity<AwaitingOrder>()
                 .ToTable("AwaitingOrders")
                 .HasBaseType((Type)null);

@@ -10,6 +10,7 @@ namespace WarehouseWebsite.Domain.Interfaces
         IOrderRepository OrderRepository { get; }
         IAwaitingOrderRepository AwaitingOrderRepository { get; }
         ICustomerRepository CustomerRepository { get; }
+        IImageRepository ImageRepository { get; }
 
         Task BeginTransactionAsync(IsolationLevel isolationLevel, CancellationToken cancellationToken);
         Task CommitTransactionAsync(CancellationToken cancellationToken);

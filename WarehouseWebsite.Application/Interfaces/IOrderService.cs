@@ -1,5 +1,4 @@
-﻿using WarehouseWebsite.Application.Models;
-using WarehouseWebsite.Domain.Filtering;
+﻿using WarehouseWebsite.Domain.Filtering;
 using WarehouseWebsite.Domain.Models.Orders;
 
 namespace WarehouseWebsite.Application.Interfaces
@@ -9,10 +8,10 @@ namespace WarehouseWebsite.Application.Interfaces
         Task SetOrderAsTransitedByIdAsync(Guid id);
         Task StartShippingItemsAsync();
 
-        Task PlaceOrderAsync(OrderDTO order, Guid customerId);
+        Task PlaceOrderAsync(Order order, Guid customerId);
 
-        Task<IEnumerable<OrderDTO>> GetTransitingOrdersAsync(FilterParameters<Order> filter, CancellationToken token);
-        Task<IEnumerable<OrderDTO>> GetTransitedOrdersAsync(FilterParameters<Order> filter, CancellationToken token);
-        Task<IEnumerable<OrderDTO>> GetAwaitingOrdersAsync(FilterParameters<AwaitingOrder> filter, CancellationToken token);
+        Task<IEnumerable<Order>> GetTransitingOrdersAsync(FilterParameters<Order> filter, CancellationToken token);
+        Task<IEnumerable<Order>> GetTransitedOrdersAsync(FilterParameters<Order> filter, CancellationToken token);
+        Task<IEnumerable<Order>> GetAwaitingOrdersAsync(FilterParameters<AwaitingOrder> filter, CancellationToken token);
     }
 }

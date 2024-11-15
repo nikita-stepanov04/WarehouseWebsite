@@ -22,6 +22,8 @@ namespace WarehouseWebsite.Domain.Models.Items
 
         public ItemCategory Category { get; set; }
 
-        public string? PhotoBlobId { get; set; }
+        public Guid PhotoBlobId { get; set; }
+
+        public string? PhotoUrl { get; set; }
     }
 }

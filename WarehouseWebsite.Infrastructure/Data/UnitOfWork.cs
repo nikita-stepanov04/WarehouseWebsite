@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Azure.Storage.Blobs;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Configuration;
 using System.Data;
 using WarehouseWebsite.Domain.Interfaces;
 using WarehouseWebsite.Domain.Interfaces.Repositories;
@@ -14,13 +16,20 @@ namespace WarehouseWebsite.Infrastructure.Data
         private IOrderRepository? _orderRepository;
         private IAwaitingOrderRepository? _awaitingOrderRepository;
         private ICustomerRepository? _customerRepository;
+        private IImageRepository? _imageRepository;
 
         private readonly DataContext _dbContext;
         private IDbContextTransaction? _transaction;
+        private string? _imageStoreConnection;
+        private string? _imageStoreContainer;
 
-        public UnitOfWork(DataContext context)
+        public UnitOfWork(DataContext context) => _dbContext = context;
+
+        public UnitOfWork(DataContext context, IConfiguration config)
         {
             _dbContext = context;
+            _imageStoreConnection = config["Azure:ImageConnection"];
+            _imageStoreContainer = config["Azure:ImageContainer"];
         }
 
         public IItemRepository ItemRepository => _itemRepository ??= new ItemRepository(_dbContext);
@@ -32,6 +41,10 @@ namespace WarehouseWebsite.Infrastructure.Data
         public IAwaitingOrderRepository AwaitingOrderRepository => _awaitingOrderRepository ??= new AwaitingOrderRepository(_dbContext);
 
         public ICustomerRepository CustomerRepository => _customerRepository ??= new CustomerRepository(_dbContext);
+
+        public IImageRepository ImageRepository => _imageRepository ??= new ImageRepository(
+            new BlobServiceClient(_imageStoreConnection ?? throw new ArgumentNullException("Image connection is not defined")),
+                                  _imageStoreContainer ?? throw new ArgumentNullException("Image store container is not defined"));
 
         public async Task BeginTransactionAsync(IsolationLevel isolationLevel,
             CancellationToken cancellationToken)

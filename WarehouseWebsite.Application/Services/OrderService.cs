@@ -1,7 +1,5 @@
-﻿using AutoMapper;
-using System.Data;
+﻿using System.Data;
 using WarehouseWebsite.Application.Interfaces;
-using WarehouseWebsite.Application.Models;
 using WarehouseWebsite.Domain.Filtering;
 using WarehouseWebsite.Domain.Interfaces;
 using WarehouseWebsite.Domain.Interfaces.Repositories;
@@ -16,41 +14,35 @@ namespace WarehouseWebsite.Application.Services
         private readonly IOrderRepository _orderRepository;
         private readonly IAwaitingOrderRepository _awaitingOrderRepository;
         private readonly IItemRepository _itemRepository;
-        private readonly IMapper _mapper;
 
-        public OrderService(IUnitOfWork unitOfWork, IMapper mapper)
+        public OrderService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _orderRepository = unitOfWork.OrderRepository;
             _awaitingOrderRepository = unitOfWork.AwaitingOrderRepository;
             _itemRepository = unitOfWork.ItemRepository;
-            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<OrderDTO>> GetAwaitingOrdersAsync(
+        public async Task<IEnumerable<Order>> GetAwaitingOrdersAsync(
             FilterParameters<AwaitingOrder> filter, CancellationToken token)
         {
-            var orders = await _awaitingOrderRepository.GetAwaitingOrdersAsync(filter, token);
-            return _mapper.Map<IEnumerable<OrderDTO>>(orders.Select(o => (Order)o));
+            return await _awaitingOrderRepository.GetAwaitingOrdersAsync(filter, token);
         }
 
-        public async Task<IEnumerable<OrderDTO>> GetTransitedOrdersAsync(
+        public async Task<IEnumerable<Order>> GetTransitedOrdersAsync(
             FilterParameters<Order> filter, CancellationToken token)
         {
-            var orders = await _orderRepository.GetTransitedOrdersAsync(filter, token);
-            return _mapper.Map<IEnumerable<OrderDTO>>(orders);
+            return await _orderRepository.GetTransitedOrdersAsync(filter, token);
         }
 
-        public async Task<IEnumerable<OrderDTO>> GetTransitingOrdersAsync(
+        public async Task<IEnumerable<Order>> GetTransitingOrdersAsync(
             FilterParameters<Order> filter, CancellationToken token)
         {
-            var orders = await _orderRepository.GetTransitingOrdersAsync(filter, token);
-            return _mapper.Map<IEnumerable<OrderDTO>>(orders);
+            return await _orderRepository.GetTransitingOrdersAsync(filter, token);
         }
 
-        public async Task PlaceOrderAsync(OrderDTO orderDTO, Guid customerId)
+        public async Task PlaceOrderAsync(Order order, Guid customerId)
         {
-            Order order = _mapper.Map<Order>(orderDTO);
             order.CustomerId = customerId;
             order.OrderTime = DateTime.UtcNow;
 

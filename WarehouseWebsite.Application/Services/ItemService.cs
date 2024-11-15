@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using WarehouseWebsite.Application.Helpers;
 using WarehouseWebsite.Application.Interfaces;
 using WarehouseWebsite.Domain.Filtering;
 using WarehouseWebsite.Domain.Interfaces;
@@ -12,16 +13,24 @@ namespace WarehouseWebsite.Application.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IItemRepository _itemRepository;
         private readonly IMissingItemRepository _missingItemRepository;
+        private readonly IImageRepository _imageRepository;
 
         public ItemService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _itemRepository = unitOfWork.ItemRepository;
             _missingItemRepository = unitOfWork.MissingItemRepository;
+            _imageRepository = unitOfWork.ImageRepository;
         }
 
-        public async Task AddItemAsync(Item item)
+        public async Task AddItemAsync(Item item, Stream image)
         {
+            var compressor = new ImageCompressor();
+            await compressor.CompressImageInStreamAsync(image);
+
+            Guid imageId = await _imageRepository.UploadAsync(image, "image/jpeg");
+            item.PhotoBlobId = imageId;
+
             await _itemRepository.AddAsync(item);
             await _unitOfWork.SaveAsync();
         }
@@ -31,12 +40,14 @@ namespace WarehouseWebsite.Application.Services
             return await _itemRepository.GetByIdAsync(id);
         }
 
-        public async Task<IEnumerable<Item>> GetItemsByFilterAsync(FilterParameters<Item> filter, CancellationToken token)
+        public async Task<IEnumerable<Item>> GetItemsByFilterAsync(
+            FilterParameters<Item> filter, CancellationToken token)
         {
             return await _itemRepository.GetItemsByFilterAsync(filter, token);
         }
 
-        public async Task<IEnumerable<MissingItem>> GetMissingItemsAsync(FilterParameters<MissingItem> filter, CancellationToken token)
+        public async Task<IEnumerable<MissingItem>> GetMissingItemsAsync(
+            FilterParameters<MissingItem> filter, CancellationToken token)
         {
             return await _missingItemRepository.GetItemsByFilterAsync(filter, token);
         }
