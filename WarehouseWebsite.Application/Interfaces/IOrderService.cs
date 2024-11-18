@@ -3,7 +3,7 @@ using WarehouseWebsite.Domain.Models.Orders;
 
 namespace WarehouseWebsite.Application.Interfaces
 {
-    internal interface IOrderService
+    public interface IOrderService
     {
         Task SetOrderAsTransitedByIdAsync(Guid id);
         Task StartShippingItemsAsync();
