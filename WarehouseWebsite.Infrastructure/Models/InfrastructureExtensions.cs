@@ -23,7 +23,7 @@ namespace WarehouseWebsite.Infrastructure.Models
             return services;
         }
 
-        public static void DatabaseMigrate(IServiceProvider services)
+        public static IServiceProvider DatabaseMigrate(this IServiceProvider services)
         {
             using (var scope = services.CreateScope())
             {
@@ -33,6 +33,7 @@ namespace WarehouseWebsite.Infrastructure.Models
                     dbContext.Database.Migrate();
                 }
             }
-        }
+            return services;
+        }       
     }
 }

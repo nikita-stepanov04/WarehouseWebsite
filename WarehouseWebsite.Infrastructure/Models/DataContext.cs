@@ -1,11 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using WarehouseWebsite.Domain.Models;
 using WarehouseWebsite.Domain.Models.Customers;
 using WarehouseWebsite.Domain.Models.Items;
 using WarehouseWebsite.Domain.Models.Orders;
 
 namespace WarehouseWebsite.Infrastructure.Models
 {
-    public class DataContext : DbContext
+    public class DataContext : IdentityDbContext<AppUser>
     {
         public DataContext(DbContextOptions<DataContext> opts) 
             : base(opts) { }
@@ -16,6 +18,7 @@ namespace WarehouseWebsite.Infrastructure.Models
         public DbSet<Item> Items => Set<Item>();
         public DbSet<MissingItem> MissingItems => Set<MissingItem>();
         public DbSet<Customer> Customers => Set<Customer>();
+        public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
