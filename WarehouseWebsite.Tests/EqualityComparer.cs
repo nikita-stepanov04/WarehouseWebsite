@@ -1,4 +1,5 @@
-﻿using WarehouseWebsite.Domain.Models.Items;
+﻿using WarehouseWebsite.Domain.Models;
+using WarehouseWebsite.Domain.Models.Items;
 using WarehouseWebsite.Domain.Models.Orders;
 
 namespace WarehouseWebsite.Tests
@@ -87,4 +88,24 @@ namespace WarehouseWebsite.Tests
             return HashCode.Combine(obj.Id, obj.ItemId, obj.OrderId, obj.Quantity, obj.Price);
         }
     }
+
+    public class RefreshTokenEqualityComparer : IEqualityComparer<RefreshToken>
+    {
+        public bool Equals(RefreshToken? x, RefreshToken? y)
+        {
+            if (x == null && y == null) return true;
+            if (x == null || y == null) return false;
+
+            return x.Token == y.Token &&
+                   x.Created == y.Created &&
+                   x.Expires == y.Expires &&
+                   x.IsRevoked == y.IsRevoked;
+        }
+
+        public int GetHashCode(RefreshToken obj)
+        {
+            return HashCode.Combine(obj.Token, obj.Created, obj.Expires, obj.IsRevoked);
+        }
+    }
+
 }

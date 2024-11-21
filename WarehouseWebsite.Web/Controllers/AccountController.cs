@@ -37,7 +37,7 @@ namespace WarehouseWebsite.Web.Controllers
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
 
-            if (user == null) return Unauthorized(new { Message = "Invalid username or password" });
+            if (user == null) return Unauthorized(new { Message = "Invalid username" });
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
 
@@ -59,7 +59,7 @@ namespace WarehouseWebsite.Web.Controllers
                 var refreshToken = _jwtTokenService.GenerateRefreshToken();
 
                 RefreshToken token = new();
-                if (user.RefreshTokenId != null)
+                if (user.RefreshTokenId != null) // update token in db if user already has it
                 {
                     token = (await _jwtTokenService.GetRefreshTokenByIdAsync((Guid)user.RefreshTokenId))!;                     
                 }                
@@ -74,7 +74,7 @@ namespace WarehouseWebsite.Web.Controllers
 
                 return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken });
             }
-            return Unauthorized();
+            return Unauthorized(new { Message = "Invalid password" });
         }
 
         [HttpPost("register")]
@@ -116,11 +116,6 @@ namespace WarehouseWebsite.Web.Controllers
             var principal = _jwtTokenService.GetPrincipalFromExpiredToken(request.AccessToken);
 
             if (principal == null) return BadRequest(new { Message = "Invalid access token" });
-
-            var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier)!;
-            var user = await _userManager.FindByIdAsync(userId);
-
-            if (user == null) return BadRequest(new { Message = "User was not found" });
 
             var storedToken = await _jwtTokenService.GetStoredRefreshTokenAsync(request.RefreshToken);
 

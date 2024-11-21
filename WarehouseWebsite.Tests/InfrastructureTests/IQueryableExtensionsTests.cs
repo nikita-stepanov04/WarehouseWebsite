@@ -19,7 +19,7 @@ namespace WarehouseWebsite.Tests.InfrastructureTests
             var items = GetItems().WithFilter(filter);
 
             Assert.That(items.Count(), Is.EqualTo(2));
-            Assert.IsTrue(items.All(i => i.Category == ItemCategory.Electronics));
+            Assert.That(items.All(i => i.Category == ItemCategory.Electronics));
         }
 
         [Test]
