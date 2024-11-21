@@ -16,20 +16,17 @@ namespace WarehouseWebsite.Web.Controllers
     public class AccountController : ControllerBase
     {
         private readonly UserManager<AppUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly JwtTokenService _jwtTokenService;
         private readonly JwtSettings _jwtSettings;
 
         public AccountController(
             UserManager<AppUser> userManager,
-            RoleManager<IdentityRole> roleManager,
             SignInManager<AppUser> signInManager,
             JwtTokenService jwtTokenService,
             IOptions<JwtSettings> jwtSettings)
         {
             _userManager = userManager;
-            _roleManager = roleManager;
             _signInManager = signInManager;
             _jwtTokenService = jwtTokenService;
             _jwtSettings = jwtSettings.Value;
@@ -61,12 +58,14 @@ namespace WarehouseWebsite.Web.Controllers
                 var accessToken = _jwtTokenService.GenerateAccessToken(claims);
                 var refreshToken = _jwtTokenService.GenerateRefreshToken();
 
-                var token = new RefreshToken
+                RefreshToken token = new();
+                if (user.RefreshTokenId != null)
                 {
-                    Token = refreshToken,
-                    Created = DateTime.UtcNow,
-                    Expires = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationDays)
-                };
+                    token = (await _jwtTokenService.GetRefreshTokenByIdAsync((Guid)user.RefreshTokenId))!;                     
+                }                
+                token.Token = refreshToken;
+                token.Created = DateTime.UtcNow;
+                token.Expires = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationDays);                
 
                 user.RefreshToken = token;
                 var updateResult = await _userManager.UpdateAsync(user);

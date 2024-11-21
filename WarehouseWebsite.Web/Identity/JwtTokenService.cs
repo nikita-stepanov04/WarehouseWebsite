@@ -43,6 +43,11 @@ namespace WarehouseWebsite.Web.Identity
             return await _tokenRepository.GetRefreshTokenAsync(token);
         }
 
+        public async Task<RefreshToken?> GetRefreshTokenByIdAsync(Guid tokenId)
+        {
+            return await _tokenRepository.GetRefreshTokenByIdAsync(tokenId);
+        }
+
         public async Task UpdateRefreshTokenAsync(RefreshToken refreshToken)
         {
             await _tokenRepository.UpdateRefreshTokenAsync(refreshToken);
