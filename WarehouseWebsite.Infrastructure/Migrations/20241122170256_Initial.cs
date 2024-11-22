@@ -64,7 +64,7 @@ namespace WarehouseWebsite.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Token = table.Column<string>(type: "text", nullable: false),
+                    Token = table.Column<string>(type: "text", nullable: true),
                     Created = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Expires = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     IsRevoked = table.Column<bool>(type: "boolean", nullable: false)

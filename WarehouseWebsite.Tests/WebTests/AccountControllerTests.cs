@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -98,7 +97,7 @@ namespace WarehouseWebsite.Tests.WebTests
             var result = await _controller.Login(request);
             Assert.That(result, Is.TypeOf<UnauthorizedObjectResult>());
         }
-        
+
         [Test]
         public async Task AccountControllerLoginReturnUnauthorizedWhenEmailOrPasswordAreNotValid()
         {
@@ -180,7 +179,7 @@ namespace WarehouseWebsite.Tests.WebTests
         {
             var accessToken = _jwtTokenService.GenerateAccessToken(_claims);
             var request = new TokenRequest { AccessToken = accessToken, RefreshToken = "refresh-token" };
-            
+
             var result = await _controller.Refresh(request);
             Assert.That(result, Is.TypeOf<UnauthorizedObjectResult>());
         }
@@ -199,7 +198,7 @@ namespace WarehouseWebsite.Tests.WebTests
             var request = new TokenRequest { AccessToken = accessTokenStr, RefreshToken = refreshTokenStr };
             await _dataContext.RefreshTokens.AddAsync(refreshToken);
             await _dataContext.SaveChangesAsync();
-            
+
             var controllerResult = await _controller.Refresh(request);
             Assert.That(controllerResult, Is.TypeOf<OkObjectResult>());
 
@@ -233,7 +232,7 @@ namespace WarehouseWebsite.Tests.WebTests
 
             var user = new AppUser() { Id = "userId", RefreshTokenId = refreshToken.Id };
 
-            var headers = new HeaderDictionary {{ "Authorization", $"Bearer {accessToken}" }};
+            var headers = new HeaderDictionary { { "Authorization", $"Bearer {accessToken}" } };
             var contextMock = new Mock<HttpContext>();
 
             contextMock.Setup(c => c.User).Returns(_jwtTokenService.GetPrincipalFromExpiredToken(accessToken)!);

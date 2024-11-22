@@ -13,7 +13,8 @@ namespace WarehouseWebsite.Infrastructure.Filtering
                 Quantity = i.Quantity,
                 Weight = i.Weight,
                 Category = i.Category,
-                Price = i.Price
+                Price = i.Price,
+                PhotoBlobId = i.PhotoBlobId
             };
         }
     }

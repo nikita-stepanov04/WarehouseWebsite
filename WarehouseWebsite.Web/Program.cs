@@ -1,10 +1,10 @@
-using System.Text.Json.Serialization;
 using WarehouseWebsite.Application.Interfaces;
 using WarehouseWebsite.Application.Services;
 using WarehouseWebsite.Domain.Interfaces;
 using WarehouseWebsite.Domain.Interfaces.Repositories;
 using WarehouseWebsite.Infrastructure.Data;
 using WarehouseWebsite.Infrastructure.Models;
+using WarehouseWebsite.Web.Configure;
 using WarehouseWebsite.Web.Identity;
 using static WarehouseWebsite.Infrastructure.Models.InfrastructureExtensions;
 using static WarehouseWebsite.Web.Identity.IdentityServices;
@@ -19,19 +19,16 @@ namespace WarehouseWebsite.Web
 
             builder.Services
                 .AddControllers()
-                .AddJsonOptions(opts =>
-                {
-                    opts.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-                    opts.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-                });
+                .SetUpJsonOptions();
 
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.SetUpSwagger();
 
             builder.Services.AddMemoryCache();
 
             builder.Services.AddInfrastructureServices(builder.Configuration);
             builder.Services.SetUpIdentity(builder.Configuration);
+            builder.Services.SetUpOptions();
 
             builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<ICustomerService, CustomerService>();
@@ -40,15 +37,12 @@ namespace WarehouseWebsite.Web
             builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             builder.Services.AddScoped<JwtTokenService>();
 
-            builder.Services.AddOptions<JwtSettings>()
-                .BindConfiguration("Jwt")
-                .ValidateDataAnnotations()
-                .ValidateOnStart();
-
             var app = builder.Build();
 
             app.Services.DatabaseMigrate();
             app.Services.SeedRoles();
+            app.Services.SeedWithTestData();
+            app.Services.CreateAzureBlobContainer();
 
             app.UseSwagger();
             app.UseSwaggerUI();

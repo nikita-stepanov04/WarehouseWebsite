@@ -37,13 +37,21 @@ namespace WarehouseWebsite.Application.Services
 
         public async Task<Item?> GetByIdAsync(Guid id)
         {
-            return await _itemRepository.GetByIdAsync(id);
+            var item = await _itemRepository.GetByIdAsync(id);
+            if (item != null)
+                item.PhotoUrl = _imageRepository.GetImageUri(item.PhotoBlobId);
+            return item;
         }
 
         public async Task<IEnumerable<Item>> GetItemsByFilterAsync(
             FilterParameters<Item> filter, CancellationToken token)
         {
-            return await _itemRepository.GetItemsByFilterAsync(filter, token);
+            var items = await _itemRepository.GetItemsByFilterAsync(filter, token);
+            foreach(var item in items)
+            {
+                item.PhotoUrl = _imageRepository.GetImageUri(item.PhotoBlobId);
+            }
+            return items;
         }
 
         public async Task<IEnumerable<MissingItem>> GetMissingItemsAsync(

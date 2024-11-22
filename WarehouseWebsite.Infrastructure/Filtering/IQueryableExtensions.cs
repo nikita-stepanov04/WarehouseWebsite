@@ -9,7 +9,7 @@ namespace WarehouseWebsite.Infrastructure.Filtering
         {
             if (parameters.Filter != null)
             {
-                query = query.Where(parameters.Filter).AsQueryable();
+                query = query.Where(parameters.Filter);
             }
             if (parameters.Skip > 0)
             {

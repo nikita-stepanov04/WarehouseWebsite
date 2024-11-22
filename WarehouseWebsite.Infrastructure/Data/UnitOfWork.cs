@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using System.Data;
 using WarehouseWebsite.Domain.Interfaces;
 using WarehouseWebsite.Domain.Interfaces.Repositories;
@@ -20,16 +21,14 @@ namespace WarehouseWebsite.Infrastructure.Data
 
         private readonly DataContext _dbContext;
         private IDbContextTransaction? _transaction;
-        private string? _imageStoreConnection;
-        private string? _imageStoreContainer;
+        private AzureSettings? _azureSettings;
 
         public UnitOfWork(DataContext context) => _dbContext = context;
 
-        public UnitOfWork(DataContext context, IConfiguration config)
+        public UnitOfWork(DataContext context, IOptions<AzureSettings> azureSettings)
         {
             _dbContext = context;
-            _imageStoreConnection = config["Azure:ImageConnection"];
-            _imageStoreContainer = config["Azure:ImageContainer"];
+            _azureSettings = azureSettings.Value;
         }
 
         public IItemRepository ItemRepository => _itemRepository ??= new ItemRepository(_dbContext);
@@ -42,9 +41,11 @@ namespace WarehouseWebsite.Infrastructure.Data
 
         public ICustomerRepository CustomerRepository => _customerRepository ??= new CustomerRepository(_dbContext);
 
-        public IImageRepository ImageRepository => _imageRepository ??= new ImageRepository(
-            new BlobServiceClient(_imageStoreConnection ?? throw new ArgumentNullException("Image connection is not defined")),
-                                  _imageStoreContainer ?? throw new ArgumentNullException("Image store container is not defined"));
+        public IImageRepository ImageRepository => 
+            _imageRepository ??= new ImageRepository(
+                new BlobServiceClient(_azureSettings!.ImageConnection),
+                _azureSettings!.ImageContainer
+            );
 
         public async Task BeginTransactionAsync(IsolationLevel isolationLevel,
             CancellationToken cancellationToken)
