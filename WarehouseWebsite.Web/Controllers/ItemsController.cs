@@ -2,13 +2,14 @@
 using Microsoft.AspNetCore.Mvc;
 using WarehouseWebsite.Application.Interfaces;
 using WarehouseWebsite.Domain.Models.Items;
+using WarehouseWebsite.Web.Identity;
 using WarehouseWebsite.Web.Models;
 
 namespace WarehouseWebsite.Web.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("api/items")]
+    [Authorize(Policy = nameof(Policies.AdminsOnly))]
     public class ItemsController : ControllerBase
     {
         private readonly IItemService _itemService;

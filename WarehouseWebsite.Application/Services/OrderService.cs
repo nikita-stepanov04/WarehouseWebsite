@@ -45,11 +45,13 @@ namespace WarehouseWebsite.Application.Services
         {
             order.CustomerId = customerId;
             order.OrderTime = DateTime.UtcNow;
+            order.Status = OrderStatus.Transiting;
 
             try
             {
-                var cancellationSource = new CancellationTokenSource(TimeSpan.FromMilliseconds(200));
-                var token = cancellationSource.Token;
+                //var cancellationSource = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+                //var token = cancellationSource.Token;
+                var token = CancellationToken.None;
                 await _unitOfWork.BeginTransactionAsync(IsolationLevel.RepeatableRead, token);
 
                 var itemIds = order.OrderItems.Select(i => i.ItemId).ToList();
@@ -58,7 +60,7 @@ namespace WarehouseWebsite.Application.Services
                     Filter = i => itemIds.Contains(i.Id)
                 };
 
-                var items = await _itemRepository.GetItemsByFilterAsync(filter, token);
+                var items = (await _itemRepository.GetItemsByFilterAsync(filter, token));
 
                 // temporary store for updated item quantity,
                 // is not applied to items if order is an awaiting order
@@ -68,14 +70,13 @@ namespace WarehouseWebsite.Application.Services
                 foreach(var orderItem in order.OrderItems)
                 {
                     Item item = items.First(i => i.Id == orderItem.ItemId);
-
                     if (item.Quantity >= orderItem.Quantity)                    
                         itemNewQuantityDict.Add(item, item.Quantity - orderItem.Quantity);                    
                     else
                         awaitingOrder = true;
 
                     orderItem.Price = item.Price;
-                    order.TotalPrice += item.Price;
+                    order.TotalPrice += item.Price * orderItem.Quantity;
                 }
 
                 if (awaitingOrder)
@@ -88,7 +89,9 @@ namespace WarehouseWebsite.Application.Services
                 {
                     foreach (var itemKvp in itemNewQuantityDict)
                     {
-                        itemKvp.Key.Quantity = itemKvp.Value;
+                        var item = itemKvp.Key;
+                        item.Quantity = itemKvp.Value;
+                        _itemRepository.UpdateQuantity(item);
                     }
                     await _orderRepository.AddAsync(order);
                     await _unitOfWork.SaveAsync(token);

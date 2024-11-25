@@ -17,11 +17,7 @@ namespace WarehouseWebsite.Infrastructure.Data
         {
             return await DbContext.MissingItems
                 .Include(mi => mi.Item)
-                .Select(mi => new MissingItem()
-                {
-                    Missing = mi.Missing,
-                    Item = ItemHelper.SelectWithoutDescription(mi.Item)
-                })
+                .SelectMissingWithoutDescription()
                 .WithFilter(filter)
                 .ToListAsync(cancellationToken: token);
         }

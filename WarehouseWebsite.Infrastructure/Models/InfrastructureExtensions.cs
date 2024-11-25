@@ -17,6 +17,7 @@ namespace WarehouseWebsite.Infrastructure.Models
             
             services.AddDbContext<DataContext>(opts =>
             {
+                opts.EnableSensitiveDataLogging();
                 opts.UseNpgsql(dbConnection, dbOpts =>
                     dbOpts.MigrationsAssembly("WarehouseWebsite.Infrastructure"));
             });

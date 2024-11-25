@@ -27,6 +27,7 @@ namespace WarehouseWebsite.Web.Configure
             {
                 opts.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
                 opts.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+                opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
             return builder;
         }

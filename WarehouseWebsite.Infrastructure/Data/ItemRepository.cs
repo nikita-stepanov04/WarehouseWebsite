@@ -15,17 +15,24 @@ namespace WarehouseWebsite.Infrastructure.Data
         public async Task<IEnumerable<Item>> GetItemsByFilterAsync(
             FilterParameters<Item> filter, CancellationToken token)
         {
-            return await DbContext.Items
+            List<Item> items = await DbContext.Items
                 .WithFilter(filter)
-                .Select(i => ItemHelper.SelectWithoutDescription(i))
+                .SelectWithoutDescription()
                 .ToListAsync(cancellationToken: token);
+            return items;
+        }
+
+        public void UpdateQuantity(Item item)
+        {
+            DbContext.Entry(item).State = EntityState.Unchanged;
+            DbContext.Entry(item).Property(i => i.Quantity).IsModified = true;
         }
 
         public async Task<Item?> GetByIdShortenAsync(Guid id)
         {
             return await DbContext.Items
                 .Where(i => i.Id == id)
-                .Select(i => ItemHelper.SelectWithoutDescription(i))
+                .SelectWithoutDescription()
                 .FirstAsync();
         }
     }
