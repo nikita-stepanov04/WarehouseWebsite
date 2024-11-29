@@ -8,12 +8,10 @@ namespace WarehouseWebsite.Tests
 {
     internal static class UnitTestHelper
     {
-        public static Guid[] Guids { get; set; }
-
-        static UnitTestHelper()
-        {
-            Guids = Enumerable.Range(0, 10).Select(_ => Guid.NewGuid()).ToArray();
-        }
+        public static Guid[] Guids { get;} = Enumerable.Range(0, 10)
+            .Select(_ => Guid.NewGuid())
+            .OrderBy(g => g)
+            .ToArray();
 
         public static DbContextOptions<DataContext> GetUnitTestDbOptions()
         {
@@ -41,7 +39,8 @@ namespace WarehouseWebsite.Tests
                 new Customer { Id = Guids[1], Name = "Jane", Surname = "Smith", Address = "456 Elm St", Email = "jane.smith@example.com" }
             );
             context.AwaitingOrders.AddRange(
-                new AwaitingOrder {
+                new AwaitingOrder 
+                {
                     Id = Guids[0],
                     CustomerId = Guids[0],
                     OrderTime = new DateTime(2023, 10, 20, 14, 30, 0),

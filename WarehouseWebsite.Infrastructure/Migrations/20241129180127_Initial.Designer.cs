@@ -12,7 +12,7 @@ using WarehouseWebsite.Infrastructure.Models;
 namespace WarehouseWebsite.Infrastructure.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241122170256_Initial")]
+    [Migration("20241129180127_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -196,13 +196,11 @@ namespace WarehouseWebsite.Infrastructure.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("text");
 
                     b.Property<Guid>("PhotoBlobId")
                         .HasColumnType("uuid");
@@ -302,7 +300,7 @@ namespace WarehouseWebsite.Infrastructure.Migrations
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("OrderId")
+                    b.Property<Guid?>("OrderId")
                         .HasColumnType("uuid");
 
                     b.Property<decimal>("Price")
@@ -505,9 +503,10 @@ namespace WarehouseWebsite.Infrastructure.Migrations
 
             modelBuilder.Entity("WarehouseWebsite.Domain.Models.Orders.OrderItem", b =>
                 {
-                    b.HasOne("WarehouseWebsite.Domain.Models.Orders.AwaitingOrder", null)
+                    b.HasOne("WarehouseWebsite.Domain.Models.Orders.AwaitingOrder", "AwaitingOrder")
                         .WithMany("OrderItems")
-                        .HasForeignKey("AwaitingOrderId");
+                        .HasForeignKey("AwaitingOrderId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("WarehouseWebsite.Domain.Models.Items.Item", "Item")
                         .WithMany()
@@ -518,8 +517,9 @@ namespace WarehouseWebsite.Infrastructure.Migrations
                     b.HasOne("WarehouseWebsite.Domain.Models.Orders.Order", "Order")
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("AwaitingOrder");
 
                     b.Navigation("Item");
 

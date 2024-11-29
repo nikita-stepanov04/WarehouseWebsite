@@ -17,5 +17,8 @@ namespace WarehouseWebsite.Domain.Interfaces
         Task RollbackTransactionAsync();
         Task SaveAsync(CancellationToken cancellationToken);
         Task SaveAsync();
+
+        void DetachItems();
+        void ClearContext();
     }
 }

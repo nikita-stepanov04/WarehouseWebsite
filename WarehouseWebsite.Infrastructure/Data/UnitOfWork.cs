@@ -1,11 +1,11 @@
 ﻿using Azure.Storage.Blobs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using System.Data;
 using WarehouseWebsite.Domain.Interfaces;
 using WarehouseWebsite.Domain.Interfaces.Repositories;
+using WarehouseWebsite.Domain.Models.Items;
 using WarehouseWebsite.Infrastructure.Models;
 
 namespace WarehouseWebsite.Infrastructure.Data
@@ -41,7 +41,7 @@ namespace WarehouseWebsite.Infrastructure.Data
 
         public ICustomerRepository CustomerRepository => _customerRepository ??= new CustomerRepository(_dbContext);
 
-        public IImageRepository ImageRepository => 
+        public IImageRepository ImageRepository =>
             _imageRepository ??= new ImageRepository(
                 new BlobServiceClient(_azureSettings!.ImageConnection),
                 _azureSettings!.ImageContainer
@@ -79,6 +79,19 @@ namespace WarehouseWebsite.Infrastructure.Data
         public async Task SaveAsync(CancellationToken cancellationToken)
         {
             await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+
+        public void DetachItems()
+        {
+            foreach (var entity in _dbContext.ChangeTracker.Entries<Item>().ToList())
+            {
+                entity.State = EntityState.Detached;
+            }
+        }
+
+        public void ClearContext()
+        {
+            _dbContext.ChangeTracker.Clear();
         }
 
         public void Dispose()

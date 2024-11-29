@@ -35,5 +35,18 @@ namespace WarehouseWebsite.Infrastructure.Data
                 .SelectWithoutDescription()
                 .FirstAsync();
         }
+
+        public async Task<IEnumerable<Item>> GetItemsByIdsAsNoTracking(IEnumerable<Guid> ids, CancellationToken token)
+        {
+            var filter = new FilterParameters<Item>
+            {
+                Filter = i => ids.Contains(i.Id)
+            };
+            return await DbContext.Items
+                .AsNoTracking()
+                .WithFilter(filter)
+                .SelectWithoutDescription()
+                .ToListAsync(cancellationToken: token);
+        }
     }
 }

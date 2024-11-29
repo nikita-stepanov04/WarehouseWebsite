@@ -74,7 +74,7 @@ namespace WarehouseWebsite.Application.Services
         {
             try
             {
-                var cancellationSource = new CancellationTokenSource(TimeSpan.FromMilliseconds(200));
+                var cancellationSource = new CancellationTokenSource(TimeSpan.FromMilliseconds(2000));
                 var token = cancellationSource.Token;
                 await _unitOfWork.BeginTransactionAsync(IsolationLevel.RepeatableRead, token);
 

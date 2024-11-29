@@ -13,13 +13,19 @@ namespace WarehouseWebsite.Infrastructure.Data
             : base(context) { }
 
         public async Task<IEnumerable<AwaitingOrder>> GetAwaitingOrdersAsync(
-            FilterParameters<AwaitingOrder> filter, CancellationToken token)
+            FilterParameters<AwaitingOrder> filter, CancellationToken token, bool withItems = true)
         {
-            return await DbContext.AwaitingOrders
-                .Include(o => o.OrderItems)
-                    .ThenInclude(oi => oi.Item)
-                .WithFilter(filter)
-                .ToListAsync(cancellationToken: token);
+            IQueryable<AwaitingOrder> query = DbContext.AwaitingOrders;
+
+            if (withItems)
+                query = query.Include(o => o.OrderItems).ThenInclude(oi => oi.Item);
+            else
+                query = query.Include(o => o.OrderItems);
+
+            query = query.WithFilter(filter);
+
+            return await query.ToListAsync(cancellationToken: token);
         }
+
     }
 }

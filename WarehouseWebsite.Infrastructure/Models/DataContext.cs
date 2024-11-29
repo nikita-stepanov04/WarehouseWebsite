@@ -29,7 +29,23 @@ namespace WarehouseWebsite.Infrastructure.Models
 
             modelBuilder.Entity<AwaitingOrder>()
                 .ToTable("AwaitingOrders")
-                .HasBaseType((Type)null);
+                .HasBaseType((Type)null)
+                .HasMany(o => o.OrderItems)
+                .WithOne(oi => oi.AwaitingOrder)
+                .HasForeignKey(oi => oi.AwaitingOrderId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<OrderItem>()
+                .HasOne(oi => oi.Order)
+                .WithMany(o => o.OrderItems)
+                .HasForeignKey(oi => oi.OrderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<OrderItem>()
+                .HasOne(oi => oi.AwaitingOrder)
+                .WithMany(ao => ao.OrderItems)
+                .HasForeignKey(oi => oi.AwaitingOrderId)
+                .OnDelete(DeleteBehavior.SetNull);                
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Quartz;
+using WarehouseWebsite.Infrastructure.Jobs;
 
 namespace WarehouseWebsite.Infrastructure.Models
 {
@@ -21,6 +23,18 @@ namespace WarehouseWebsite.Infrastructure.Models
                 opts.UseNpgsql(dbConnection, dbOpts =>
                     dbOpts.MigrationsAssembly("WarehouseWebsite.Infrastructure"));
             });
+
+            services.AddQuartz(opts =>
+            {
+                var jobKey = new JobKey("ItemShippingJob");
+                opts.AddJob<ItemShippingJob>(opts =>
+                {
+                    opts.WithIdentity(jobKey);
+                    opts.StoreDurably();
+                });
+            });
+            services.AddQuartzHostedService();
+            services.AddTransient<JobStartingHelper>();
             return services;
         }
 

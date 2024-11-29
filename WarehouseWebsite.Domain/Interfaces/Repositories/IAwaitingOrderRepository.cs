@@ -6,6 +6,6 @@ namespace WarehouseWebsite.Domain.Interfaces.Repositories
     public interface IAwaitingOrderRepository : IRepository<AwaitingOrder>
     {
         Task<IEnumerable<AwaitingOrder>> GetAwaitingOrdersAsync(
-            FilterParameters<AwaitingOrder> filter, CancellationToken token);
+            FilterParameters<AwaitingOrder> filter, CancellationToken token, bool withItems = false);
     }
 }

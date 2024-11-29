@@ -1,4 +1,5 @@
 ﻿using WarehouseWebsite.Domain.Filtering;
+using WarehouseWebsite.Domain.Models;
 
 namespace WarehouseWebsite.Infrastructure.Filtering
 {
@@ -6,7 +7,9 @@ namespace WarehouseWebsite.Infrastructure.Filtering
     {
         public static IQueryable<T> WithFilter<T>(
             this IQueryable<T> query, FilterParameters<T> parameters)
+            where T : BaseEntity
         {
+            query = query.OrderBy(i => i.Id);
             if (parameters.Filter != null)
             {
                 query = query.Where(parameters.Filter);

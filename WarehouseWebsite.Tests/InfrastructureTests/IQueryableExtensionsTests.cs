@@ -31,7 +31,7 @@ namespace WarehouseWebsite.Tests.InfrastructureTests
                 Take = 2
             };
 
-            var itemsList = GetItems().WithFilter(filter).ToList();
+            var itemsList = GetItems().WithFilter(filter).ToList();            
 
             Assert.That(itemsList.Count, Is.EqualTo(2));
             Assert.That(itemsList[0].Id, Is.EqualTo(Guids[1]));

@@ -41,7 +41,83 @@ namespace WarehouseWebsite.Application.Services
             return await _orderRepository.GetTransitingOrdersAsync(filter, token);
         }
 
-        public async Task PlaceOrderAsync(Order order, Guid customerId)
+        public async Task StartShippingItemsAsync()
+        {
+            var jobExecutionStartTime = DateTime.UtcNow;
+            var filter = new FilterParameters<AwaitingOrder>
+            {
+                Take = 2,
+                Filter = o => o.OrderTime <= jobExecutionStartTime
+            };
+
+            while (true)
+            {
+                var awaitingOrders = ((await _awaitingOrderRepository.GetAwaitingOrdersAsync(
+                    filter, token: default, withItems: false)) as List<AwaitingOrder>)!;
+
+                if (awaitingOrders.Count == 0)
+                    break;                
+
+                foreach (var awaitingOrder in awaitingOrders)
+                {
+                    try
+                    {
+                        //var cancellationSource = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+                        //var token = cancellationSource.Token;
+                        var token = CancellationToken.None;
+                        await _unitOfWork.BeginTransactionAsync(IsolationLevel.RepeatableRead, token);
+                        
+                        var itemIds = awaitingOrder.OrderItems.Select(i => i.ItemId).ToList();                        
+                        var items = await _itemRepository.GetItemsByIdsAsNoTracking(itemIds, token);
+                        
+                        // temporary store for updated item quantity,
+                        // is not applied to items if order is still awaiting
+                        Dictionary<Item, int> itemNewQuantityDict = new();
+                        bool isAwaiting = false;
+                        foreach (var orderItem in awaitingOrder.OrderItems)
+                        {                            
+                            Item item = items.First(i => i.Id == orderItem.ItemId);
+                            if (item.Quantity < orderItem.Quantity)
+                            {
+                                isAwaiting = true;
+                                break;
+                            }
+                            else
+                            {
+                                itemNewQuantityDict.Add(item, item.Quantity - orderItem.Quantity);
+                            }
+                        }
+
+                        if (isAwaiting)
+                        {
+                            await _unitOfWork.RollbackTransactionAsync();
+                            filter.Skip++;
+                        }
+                        else 
+                        {
+                            var order = awaitingOrder.ToOrder();
+                            await _orderRepository.AddAsync(order);
+                            _unitOfWork.DetachItems();
+
+                            UpdateItemQuantities(itemNewQuantityDict);
+
+                            _awaitingOrderRepository.Remove(awaitingOrder);
+
+                            await _unitOfWork.SaveAsync(token);
+                            await _unitOfWork.CommitTransactionAsync(token);
+                        }
+                        _unitOfWork.DetachItems();
+                    }
+                    catch 
+                    {
+                        await _unitOfWork.RollbackTransactionAsync();
+                    }
+                }
+                _unitOfWork.ClearContext();
+            }
+        }
+
+        public async Task<Guid> PlaceOrderAsync(Order order, Guid customerId)
         {
             order.CustomerId = customerId;
             order.OrderTime = DateTime.UtcNow;
@@ -49,53 +125,47 @@ namespace WarehouseWebsite.Application.Services
 
             try
             {
-                //var cancellationSource = new CancellationTokenSource(TimeSpan.FromSeconds(2));
-                //var token = cancellationSource.Token;
-                var token = CancellationToken.None;
+                var cancellationSource = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+                var token = cancellationSource.Token;
+                //var token = CancellationToken.None;
                 await _unitOfWork.BeginTransactionAsync(IsolationLevel.RepeatableRead, token);
 
                 var itemIds = order.OrderItems.Select(i => i.ItemId).ToList();
-                var filter = new FilterParameters<Item>
-                {
-                    Filter = i => itemIds.Contains(i.Id)
-                };
 
-                var items = (await _itemRepository.GetItemsByFilterAsync(filter, token));
+                var items = await _itemRepository.GetItemsByIdsAsNoTracking(itemIds, token);
 
                 // temporary store for updated item quantity,
                 // is not applied to items if order is an awaiting order
-                Dictionary<Item, int> itemNewQuantityDict = new(); 
-                bool awaitingOrder = false;
+                Dictionary<Item, int> itemNewQuantityDict = new();
+                bool isAwaiting = false;
 
-                foreach(var orderItem in order.OrderItems)
+                foreach (var orderItem in order.OrderItems)
                 {
                     Item item = items.First(i => i.Id == orderItem.ItemId);
-                    if (item.Quantity >= orderItem.Quantity)                    
-                        itemNewQuantityDict.Add(item, item.Quantity - orderItem.Quantity);                    
+                    if (item.Quantity >= orderItem.Quantity)
+                        itemNewQuantityDict.Add(item, item.Quantity - orderItem.Quantity);
                     else
-                        awaitingOrder = true;
+                        isAwaiting = true;
 
                     orderItem.Price = item.Price;
                     order.TotalPrice += item.Price * orderItem.Quantity;
                 }
 
-                if (awaitingOrder)
+                if (isAwaiting)
                 {
                     await _unitOfWork.RollbackTransactionAsync();
-                    await _awaitingOrderRepository.AddAsync((order as AwaitingOrder)!);
+                    var awaitingOrder = new AwaitingOrder(order);
+                    await _awaitingOrderRepository.AddAsync(awaitingOrder);
                     await _unitOfWork.SaveAsync();
+                    return awaitingOrder.Id;
                 }
                 else
                 {
-                    foreach (var itemKvp in itemNewQuantityDict)
-                    {
-                        var item = itemKvp.Key;
-                        item.Quantity = itemKvp.Value;
-                        _itemRepository.UpdateQuantity(item);
-                    }
+                    UpdateItemQuantities(itemNewQuantityDict);
                     await _orderRepository.AddAsync(order);
                     await _unitOfWork.SaveAsync(token);
                     await _unitOfWork.CommitTransactionAsync(token);
+                    return order.Id;
                 }
             }
             catch
@@ -115,9 +185,14 @@ namespace WarehouseWebsite.Application.Services
             await _unitOfWork.SaveAsync();
         }
 
-        public Task StartShippingItemsAsync()
+        private void UpdateItemQuantities(Dictionary<Item, int> itemNewQuantityDict)
         {
-            throw new NotImplementedException();
+            foreach (var itemKvp in itemNewQuantityDict)
+            {
+                var item = itemKvp.Key;
+                item.Quantity = itemKvp.Value;
+                _itemRepository.UpdateQuantity(item);
+            }
         }
     }
 }

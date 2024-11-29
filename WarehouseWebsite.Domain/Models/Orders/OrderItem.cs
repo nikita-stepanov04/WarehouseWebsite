@@ -5,7 +5,8 @@ namespace WarehouseWebsite.Domain.Models.Orders
     public class OrderItem : BaseEntity
     {
         public Guid ItemId { get; set; }
-        public Guid OrderId { get; set; }
+        public Guid? OrderId { get; set; }
+        public Guid? AwaitingOrderId { get; set; }
 
         public int Quantity { get; set; }
 
@@ -13,5 +14,6 @@ namespace WarehouseWebsite.Domain.Models.Orders
 
         public Item? Item { get; set; }
         public Order? Order { get; set; }
+        public AwaitingOrder? AwaitingOrder { get; set; }
     }
 }

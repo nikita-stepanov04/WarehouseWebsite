@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using WarehouseWebsite.Application.Interfaces;
 using WarehouseWebsite.Domain.Models.Orders;
+using WarehouseWebsite.Infrastructure.Jobs;
 using WarehouseWebsite.Web.Identity;
 using WarehouseWebsite.Web.Models;
 
@@ -27,8 +28,21 @@ namespace WarehouseWebsite.Web.Controllers
             Guid customerId = UserCustomerId;
             var order = request.GetOrder();
 
-            await _orderService.PlaceOrderAsync(order, customerId);
-            return Ok(new { OrderId = order.Id });
+            try
+            {
+                var id = await _orderService.PlaceOrderAsync(order, customerId);
+                return Ok(new { OrderId = id });
+            } 
+            catch (Exception e)
+            {
+                string message = e switch
+                {
+                    InvalidOperationException => "Order is invalid",
+                    OperationCanceledException => "Failed to place order, try again later",
+                    _ => "Unexpected error while processing request"
+                };
+                return BadRequest(new { Message = message });
+            }            
         }
 
         [HttpGet()]
@@ -64,19 +78,20 @@ namespace WarehouseWebsite.Web.Controllers
             return Ok(orders);
         }
 
-        [HttpPost("transited/{orderId:guid}")]
-        [Authorize(Policy = nameof(Policies.AdminsOnly))]
+        [HttpPost("set-transited/{orderId:guid}")]
+        //[Authorize(Policy = nameof(Policies.AdminsOnly))]
         public async Task<IActionResult> SetOrderAsTransited(Guid orderId)
         {
             await _orderService.SetOrderAsTransitedByIdAsync(orderId);
             return Ok();
         }
 
-        [HttpPost("start-shipping")]
-        [Authorize(Policy = nameof(Policies.AdminsOnly))]
-        public async Task<IActionResult> StartShipping(Guid orderId)
+        [HttpGet("start-shipping")]
+        //[Authorize(Policy = nameof(Policies.AdminsOnly))]
+        public async Task<IActionResult> StartShipping(
+            [FromServices] JobStartingHelper jobStarter)
         {
-            await _orderService.StartShippingItemsAsync();
+            await jobStarter.StartAsync("ItemShippingJob");
             return Ok();
         }
 
