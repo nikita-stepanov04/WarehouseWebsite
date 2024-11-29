@@ -32,7 +32,7 @@ namespace WarehouseWebsite.Infrastructure.Data
 
             var missingList = await DbContext.MissingItems
                 .WithFilter(filter)
-                .ToListAsync();
+                .ToListAsync(token);
 
             foreach (var addToMissingItem in addToMissingList)
             {

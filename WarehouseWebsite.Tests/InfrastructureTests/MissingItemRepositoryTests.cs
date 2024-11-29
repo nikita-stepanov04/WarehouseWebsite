@@ -37,6 +37,60 @@ namespace WarehouseWebsite.Tests.InfrastructureTests
                     new FilterParameters<MissingItem>(), cancellationTokenSource.Token));
         }
 
+        [Test]
+        public async Task MissingItemRepositoryAddToMissingAddsToMissingCorrectly()
+        {
+            using var context = new DataContext(GetUnitTestDbOptions());
+            var itemRepository = new MissingItemRepository(context);
+
+            var addToMissingList = new List<MissingItem> 
+            { 
+                new MissingItem { ItemId = Guids[1], Missing = 2 },
+                new MissingItem { ItemId = Guids[2], Missing = 2 }
+            };
+
+            await itemRepository.AddToMissing(addToMissingList, default);
+            await context.SaveChangesAsync();
+
+            var missing = await itemRepository.GetItemsByFilterAsync(new FilterParameters<MissingItem>(), default);
+            Assert.That(missing.First(m => m.ItemId == Guids[1]).Missing, Is.EqualTo(4));
+            Assert.That(missing.First(m => m.ItemId == Guids[2]).Missing, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void MissingItemRepositoryAddToMissingCancelsWhenTokenIsCancelled()
+        {
+            using var context = new DataContext(GetUnitTestDbOptions());
+            var itemRepository = new MissingItemRepository(context);
+
+            var cancellationTokenSource = new CancellationTokenSource();
+            cancellationTokenSource.Cancel();
+
+            Assert.ThrowsAsync<OperationCanceledException>(async () =>
+                await itemRepository.AddToMissing([], cancellationTokenSource.Token));
+        }
+        
+        [Test]
+        public async Task MissingItemRepositoryGetByItemIdNotPopulatedReturnsItem()
+        {
+            using var context = new DataContext(GetUnitTestDbOptions());
+            var itemRepository = new MissingItemRepository(context);
+
+            var missing = await itemRepository.GetByItemIdNotPopulated(Guids[1]);
+            Assert.That(missing.Missing, Is.EqualTo(2));
+            Assert.That(missing.ItemId, Is.EqualTo(Guids[1]));
+        }
+
+        [Test]
+        public async Task MissingItemRepositoryGetByItemIdNotPopulatedReturnsNullWhenNotFound()
+        {
+            using var context = new DataContext(GetUnitTestDbOptions());
+            var itemRepository = new MissingItemRepository(context);
+
+            var missing = await itemRepository.GetByItemIdNotPopulated(Guids[2]);
+            Assert.That(missing, Is.Null);
+        }
+
         MissingItem expected = new MissingItem()
         {
             ItemId = Guids[1],
