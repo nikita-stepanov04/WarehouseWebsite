@@ -9,7 +9,7 @@ namespace WarehouseWebsite.Web.Controllers
 {
     [ApiController]
     [Route("api/items")]
-    //[Authorize(Policy = nameof(Policies.AdminsOnly))]
+    [Authorize(Policy = nameof(Policies.AdminsOnly))]
     public class ItemsController : ControllerBase
     {
         private readonly IItemService _itemService;

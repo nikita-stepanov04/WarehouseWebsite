@@ -76,6 +76,7 @@ namespace WarehouseWebsite.Application.Services
             {
                 var cancellationSource = new CancellationTokenSource(TimeSpan.FromMilliseconds(2000));
                 var token = cancellationSource.Token;
+                //var token = CancellationToken.None;
                 await _unitOfWork.BeginTransactionAsync(IsolationLevel.RepeatableRead, token);
 
                 var item = await _itemRepository.GetByIdAsync(id);
@@ -84,14 +85,14 @@ namespace WarehouseWebsite.Application.Services
 
                 if (item.Quantity == 0)
                 {
-                    var missingItem = await _missingItemRepository.GetByIdAsync(id);
+                    var missingItem = await _missingItemRepository.GetByItemIdNotPopulated(id);
 
                     if (missingItem != null)
                     {
                         if (missingItem.Missing > addQuantity)
                         {
-                            addQuantity = 0;
                             missingItem.Missing -= addQuantity;
+                            addQuantity = 0;
                         }
                         else
                         {

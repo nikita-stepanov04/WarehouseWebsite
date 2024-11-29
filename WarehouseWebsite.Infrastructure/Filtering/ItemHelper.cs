@@ -24,6 +24,7 @@ namespace WarehouseWebsite.Infrastructure.Filtering
             return items.Select(i => new MissingItem
             {
                 Missing = i.Missing,
+                ItemId = i.ItemId,
                 Item = new Item
                 {
                     Id = i.Item.Id,

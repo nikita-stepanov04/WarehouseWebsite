@@ -79,7 +79,7 @@ namespace WarehouseWebsite.Web.Controllers
         }
 
         [HttpPost("set-transited/{orderId:guid}")]
-        //[Authorize(Policy = nameof(Policies.AdminsOnly))]
+        [Authorize(Policy = nameof(Policies.AdminsOnly))]
         public async Task<IActionResult> SetOrderAsTransited(Guid orderId)
         {
             await _orderService.SetOrderAsTransitedByIdAsync(orderId);
@@ -87,7 +87,7 @@ namespace WarehouseWebsite.Web.Controllers
         }
 
         [HttpGet("start-shipping")]
-        //[Authorize(Policy = nameof(Policies.AdminsOnly))]
+        [Authorize(Policy = nameof(Policies.AdminsOnly))]
         public async Task<IActionResult> StartShipping(
             [FromServices] JobStartingHelper jobStarter)
         {

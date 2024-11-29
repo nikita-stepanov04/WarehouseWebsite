@@ -21,5 +21,33 @@ namespace WarehouseWebsite.Infrastructure.Data
                 .WithFilter(filter)
                 .ToListAsync(cancellationToken: token);
         }
+
+        public async Task AddToMissing(IEnumerable<MissingItem> addToMissingList, CancellationToken token)
+        {
+            var ids = addToMissingList.Select(mi => mi.ItemId).ToList();
+            var filter = new FilterParameters<MissingItem>
+            {
+                Filter = mi => ids.Contains(mi.ItemId)
+            };
+
+            var missingList = await DbContext.MissingItems
+                .WithFilter(filter)
+                .ToListAsync();
+
+            foreach (var addToMissingItem in addToMissingList)
+            {
+                var missingItem = missingList.FirstOrDefault(mi => mi.ItemId == addToMissingItem.ItemId);
+
+                if (missingItem == null)
+                    DbContext.MissingItems.Add(addToMissingItem);
+                else
+                    missingItem.Missing += addToMissingItem.Missing;                
+            }
+        }
+
+        public async Task<MissingItem?> GetByItemIdNotPopulated(Guid id)
+        {
+            return await DbContext.MissingItems.FirstOrDefaultAsync(mi => mi.ItemId == id);
+        }
     }
 }

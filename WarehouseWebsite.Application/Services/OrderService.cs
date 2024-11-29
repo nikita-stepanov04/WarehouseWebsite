@@ -13,6 +13,7 @@ namespace WarehouseWebsite.Application.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IOrderRepository _orderRepository;
         private readonly IAwaitingOrderRepository _awaitingOrderRepository;
+        private readonly IMissingItemRepository _missingItemRepository;
         private readonly IItemRepository _itemRepository;
 
         public OrderService(IUnitOfWork unitOfWork)
@@ -21,6 +22,7 @@ namespace WarehouseWebsite.Application.Services
             _orderRepository = unitOfWork.OrderRepository;
             _awaitingOrderRepository = unitOfWork.AwaitingOrderRepository;
             _itemRepository = unitOfWork.ItemRepository;
+            _missingItemRepository = unitOfWork.MissingItemRepository;
         }
 
         public async Task<IEnumerable<Order>> GetAwaitingOrdersAsync(
@@ -62,9 +64,9 @@ namespace WarehouseWebsite.Application.Services
                 {
                     try
                     {
-                        //var cancellationSource = new CancellationTokenSource(TimeSpan.FromSeconds(2));
-                        //var token = cancellationSource.Token;
-                        var token = CancellationToken.None;
+                        var cancellationSource = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+                        var token = cancellationSource.Token;
+                        //var token = CancellationToken.None;
                         await _unitOfWork.BeginTransactionAsync(IsolationLevel.RepeatableRead, token);
                         
                         var itemIds = awaitingOrder.OrderItems.Select(i => i.ItemId).ToList();                        
@@ -137,7 +139,8 @@ namespace WarehouseWebsite.Application.Services
                 // temporary store for updated item quantity,
                 // is not applied to items if order is an awaiting order
                 Dictionary<Item, int> itemNewQuantityDict = new();
-                bool isAwaiting = false;
+
+                List<MissingItem> addToMissingList = new();
 
                 foreach (var orderItem in order.OrderItems)
                 {
@@ -145,18 +148,28 @@ namespace WarehouseWebsite.Application.Services
                     if (item.Quantity >= orderItem.Quantity)
                         itemNewQuantityDict.Add(item, item.Quantity - orderItem.Quantity);
                     else
-                        isAwaiting = true;
+                    {
+                        addToMissingList.Add(new MissingItem
+                        {
+                            ItemId = item.Id,
+                            Missing = orderItem.Quantity - item.Quantity
+                        });
+                    }
 
                     orderItem.Price = item.Price;
                     order.TotalPrice += item.Price * orderItem.Quantity;
                 }
 
-                if (isAwaiting)
+                if (addToMissingList.Any())
                 {
-                    await _unitOfWork.RollbackTransactionAsync();
                     var awaitingOrder = new AwaitingOrder(order);
                     await _awaitingOrderRepository.AddAsync(awaitingOrder);
+
+                    await _missingItemRepository.AddToMissing(addToMissingList, token);
+
                     await _unitOfWork.SaveAsync();
+                    await _unitOfWork.CommitTransactionAsync(token);
+
                     return awaitingOrder.Id;
                 }
                 else
