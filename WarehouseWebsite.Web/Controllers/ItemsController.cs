@@ -7,10 +7,9 @@ using WarehouseWebsite.Web.Models;
 
 namespace WarehouseWebsite.Web.Controllers
 {
-    [ApiController]
     [Route("api/items")]
     [Authorize(Policy = nameof(Policies.AdminsOnly))]
-    public class ItemsController : ControllerBase
+    public class ItemsController : WarehouseControllerBase
     {
         private readonly IItemService _itemService;
 
@@ -65,15 +64,8 @@ namespace WarehouseWebsite.Web.Controllers
         public async Task<IActionResult> Restock(Guid id,
             [FromQuery] int addQuantity)
         {
-            try
-            {
-                await _itemService.RestockItemAsync(id, addQuantity);
-                return Ok();
-            }
-            catch (OperationCanceledException)
-            {
-                return BadRequest(new { Message = "Failed to restock item, try again later" });
-            }
+            await _itemService.RestockItemAsync(id, addQuantity);
+            return Ok();
         }
 
         [HttpGet("missing")]

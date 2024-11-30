@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using WarehouseWebsite.Application.Interfaces;
 using WarehouseWebsite.Domain.Models.Orders;
 using WarehouseWebsite.Infrastructure.Jobs;
@@ -10,9 +9,8 @@ using WarehouseWebsite.Web.Models;
 namespace WarehouseWebsite.Web.Controllers
 {
     [Authorize]
-    [ApiController]
     [Route("api/orders")]
-    public class OrdersController : ControllerBase
+    public class OrdersController : WarehouseControllerBase
     {
         private readonly IOrderService _orderService;
 
@@ -28,21 +26,8 @@ namespace WarehouseWebsite.Web.Controllers
             Guid customerId = UserCustomerId;
             var order = request.GetOrder();
 
-            try
-            {
-                var id = await _orderService.PlaceOrderAsync(order, customerId);
-                return Ok(new { OrderId = id });
-            } 
-            catch (Exception e)
-            {
-                string message = e switch
-                {
-                    InvalidOperationException => "Order is invalid",
-                    OperationCanceledException => "Failed to place order, try again later",
-                    _ => "Unexpected error while processing request"
-                };
-                return BadRequest(new { Message = message });
-            }            
+            var id = await _orderService.PlaceOrderAsync(order, customerId);
+            return Ok(new { OrderId = id });
         }
 
         [HttpGet()]
@@ -94,7 +79,5 @@ namespace WarehouseWebsite.Web.Controllers
             await jobStarter.StartAsync("ItemShippingJob");
             return Ok();
         }
-
-        private Guid UserCustomerId => Guid.Parse(User.FindFirstValue("CustomerId")!);
     }
 }
