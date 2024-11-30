@@ -121,6 +121,7 @@ namespace WarehouseWebsite.Application.Services
 
         public async Task<Guid> PlaceOrderAsync(Order order, Guid customerId)
         {
+            throw new Exception();
             order.CustomerId = customerId;
             order.OrderTime = DateTime.UtcNow;
             order.Status = OrderStatus.Transiting;
