@@ -48,7 +48,7 @@ namespace WarehouseWebsite.Application.Services
             var jobExecutionStartTime = DateTime.UtcNow;
             var filter = new FilterParameters<AwaitingOrder>
             {
-                Take = 2,
+                Take = 10,
                 Filter = o => o.OrderTime <= jobExecutionStartTime
             };
 

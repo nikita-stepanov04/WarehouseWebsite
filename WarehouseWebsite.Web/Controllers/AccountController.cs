@@ -11,9 +11,8 @@ using WarehouseWebsite.Web.Models;
 
 namespace WarehouseWebsite.Web.Controllers
 {
-    [ApiController]
     [Route("api/account")]
-    public class AccountController : ControllerBase
+    public class AccountController : WarehouseControllerBase
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
