@@ -26,15 +26,22 @@ namespace WarehouseWebsite.Infrastructure.Models
 
             services.AddQuartz(opts =>
             {
-                var jobKey = new JobKey("ItemShippingJob");
                 opts.AddJob<ItemShippingJob>(opts =>
                 {
-                    opts.WithIdentity(jobKey);
+                    opts.WithIdentity(new JobKey("ItemShippingJob"));
                     opts.StoreDurably();
                 });
+
+                opts.AddJob<ItemRemovalJob>(opts =>
+                {
+                    opts.WithIdentity(new JobKey("ItemRemovalJob"));
+                    opts.StoreDurably();
+                });
+
             });
             services.AddQuartzHostedService();
             services.AddTransient<JobStartingHelper>();
+
             return services;
         }
 

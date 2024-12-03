@@ -159,20 +159,20 @@ namespace WarehouseWebsite.Tests.InfrastructureTests
         #region Remove
 
         [Test]
-        public async Task GenericRepositoryRemoveRemovesItemType()
+        public async Task GenericRepositoryRemoveRemovesCustomerType()
         {
             using var context = new DataContext(GetUnitTestDbOptions());
-            var itemRepository = new ItemRepository(context);
-            var item = await itemRepository.GetByIdAsync(Guids[0]);
-            itemRepository.Remove(item);
+            var customerRepository = new CustomerRepository(context);
+            var customer = await customerRepository.GetByIdAsync(Guids[0]);
+            customerRepository.Remove(customer);
             await context.SaveChangesAsync();
 
-            var removedSupplier = await itemRepository.GetByIdAsync(Guids[0]);
+            var removedCustomer = await customerRepository.GetByIdAsync(Guids[0]);
 
-            Assert.That(context.Items.Count(), Is.EqualTo(3),
-                message: "Generic repository Remove don't remove Item type");
-            Assert.That(removedSupplier, Is.Null,
-                message: "Generic repository Remove don't remove Item type");            
+            Assert.That(context.Customers.Count(), Is.EqualTo(1),
+                message: "Generic repository Remove don't remove Customer type");
+            Assert.That(removedCustomer, Is.Null,
+                message: "Generic repository Remove don't remove Customer type");            
         }
 
         #endregion        

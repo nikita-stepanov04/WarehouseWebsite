@@ -12,7 +12,7 @@ using WarehouseWebsite.Infrastructure.Models;
 namespace WarehouseWebsite.Infrastructure.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241129180127_Initial")]
+    [Migration("20241203160213_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -197,6 +197,9 @@ namespace WarehouseWebsite.Infrastructure.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool>("IsRemoved")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -509,7 +512,7 @@ namespace WarehouseWebsite.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("WarehouseWebsite.Domain.Models.Items.Item", "Item")
-                        .WithMany()
+                        .WithMany("OrderItems")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -546,6 +549,11 @@ namespace WarehouseWebsite.Infrastructure.Migrations
             modelBuilder.Entity("WarehouseWebsite.Domain.Models.Customers.Customer", b =>
                 {
                     b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("WarehouseWebsite.Domain.Models.Items.Item", b =>
+                {
+                    b.Navigation("OrderItems");
                 });
 
             modelBuilder.Entity("WarehouseWebsite.Domain.Models.Orders.AwaitingOrder", b =>

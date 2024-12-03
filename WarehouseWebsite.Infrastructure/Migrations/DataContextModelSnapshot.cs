@@ -195,6 +195,9 @@ namespace WarehouseWebsite.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsRemoved")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -506,7 +509,7 @@ namespace WarehouseWebsite.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("WarehouseWebsite.Domain.Models.Items.Item", "Item")
-                        .WithMany()
+                        .WithMany("OrderItems")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -543,6 +546,11 @@ namespace WarehouseWebsite.Infrastructure.Migrations
             modelBuilder.Entity("WarehouseWebsite.Domain.Models.Customers.Customer", b =>
                 {
                     b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("WarehouseWebsite.Domain.Models.Items.Item", b =>
+                {
+                    b.Navigation("OrderItems");
                 });
 
             modelBuilder.Entity("WarehouseWebsite.Domain.Models.Orders.AwaitingOrder", b =>

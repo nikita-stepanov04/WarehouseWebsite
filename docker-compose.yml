@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+
   postgres:
     image: postgres:latest
     container_name: postgres
@@ -17,4 +18,10 @@ services:
     ports:
       - "10000:10000"
     command: "azurite --loose --blobHost 0.0.0.0 --blobPort 10000 --location /workspace --debug /workspace/debug.log"
-
+  
+  smtp: 
+    image: mailhog/mailhog 
+    container_name: mailhog
+    ports: 
+      - "8025:8025" # MailHog Web UI
+      - "1025:1025" # SMTP

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WarehouseWebsite.Application.Interfaces;
 using WarehouseWebsite.Domain.Models.Items;
+using WarehouseWebsite.Infrastructure.Jobs;
 using WarehouseWebsite.Web.Identity;
 using WarehouseWebsite.Web.Models;
 
@@ -54,9 +55,15 @@ namespace WarehouseWebsite.Web.Controllers
         }
         
         [HttpDelete("{id:Guid}")]
-        public async Task<IActionResult> Remove(Guid id)
+        public async Task<IActionResult> Remove(Guid id,
+            [FromServices] JobStartingHelper jobStarter)
         {
-            await _itemService.RemoveItemByIdAsync(id);
+            var parameters = new Dictionary<string, string>
+            {
+                { "itemId", id.ToString() }
+            };
+
+            await jobStarter.StartAsync("ItemRemovalJob", parameters);
             return Ok();
         }
         

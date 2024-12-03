@@ -45,7 +45,7 @@ namespace WarehouseWebsite.Infrastructure.Models
                 .HasOne(oi => oi.AwaitingOrder)
                 .WithMany(ao => ao.OrderItems)
                 .HasForeignKey(oi => oi.AwaitingOrderId)
-                .OnDelete(DeleteBehavior.SetNull);                
+                .OnDelete(DeleteBehavior.SetNull);               
         }
     }
 }

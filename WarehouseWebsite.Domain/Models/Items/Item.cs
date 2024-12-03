@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using WarehouseWebsite.Domain.Models.Orders;
 
 namespace WarehouseWebsite.Domain.Models.Items
 {
@@ -12,8 +13,13 @@ namespace WarehouseWebsite.Domain.Models.Items
         public ItemCategory Category { get; set; }
 
         [JsonIgnore]
+        public bool IsRemoved { get; set; }
+
+        [JsonIgnore]
         public Guid PhotoBlobId { get; set; }
 
         public string? PhotoUrl { get; set; }
+
+        public IEnumerable<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
     }
 }

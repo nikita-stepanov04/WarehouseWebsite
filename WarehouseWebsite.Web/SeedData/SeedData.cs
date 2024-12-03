@@ -1,18 +1,32 @@
-﻿using Azure.Storage.Blobs;
+﻿using Azure.Core;
+using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using System.Security.Claims;
+using WarehouseWebsite.Application.Interfaces;
+using WarehouseWebsite.Domain.Models.Customers;
 using WarehouseWebsite.Domain.Models.Items;
 using WarehouseWebsite.Infrastructure.Models;
+using WarehouseWebsite.Web.Identity;
 
-namespace WarehouseWebsite.Web
+namespace WarehouseWebsite.Web.SeedData
 {
     public static class SeedData
     {
         public static IServiceProvider SeedWithTestData(this IServiceProvider provider)
         {
+            SeedWithTestDataAsync(provider).Wait();
+            return provider;
+        }
+
+        private static async Task SeedWithTestDataAsync(IServiceProvider provider)
+        {
             using var scope = provider.CreateScope();
+            IItemService itemService = scope.ServiceProvider.GetRequiredService<IItemService>();
             DataContext context = scope.ServiceProvider.GetRequiredService<DataContext>();
-            
+
             if (!context.Items.Any())
             {
                 var items = new List<Item>
@@ -28,17 +42,64 @@ namespace WarehouseWebsite.Web
                     new Item { Name = "Bricks", Quantity = 100, Description = "High-quality bricks for construction", Price = 0.75m, Weight = 2.2, Category = ItemCategory.BuildingMaterials, PhotoBlobId = Guid.NewGuid() },
                     new Item { Name = "Novel", Quantity = 25, Description = "Bestselling novel by a famous author", Price = 15.99m, Weight = 0.4, Category = ItemCategory.Books, PhotoBlobId = Guid.NewGuid() }
                 };
-                context.Items.AddRange(items);
-                context.SaveChanges();
+
+                string imgPath = $"{AppContext.BaseDirectory}\\SeedData\\img";
+                foreach((int i, var item) in items.Index())
+                {
+                    var memoryStream = new MemoryStream();
+                    memoryStream.Write(File.ReadAllBytes($"{imgPath}\\{i + 1}.jpg"));
+                    memoryStream.Flush();
+                    memoryStream.Position = 0;
+                    await itemService.AddItemAsync(item, memoryStream);
+                }
             }
+        }
+
+        public static IServiceProvider SeedWithAdmins(this IServiceProvider provider)
+        {
+            SeedWithAdminsAsync(provider).Wait();
             return provider;
+        }
+
+        private static async Task SeedWithAdminsAsync(IServiceProvider provider)
+        {
+            using var scope = provider.CreateScope();
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
+
+            string GetEmail(int i) => $"admin{i}@mail.com";
+
+            List<AppUser> admins = Enumerable.Range(1, 3).Select(i =>
+                new AppUser
+                {
+                    Email = GetEmail(i),
+                    UserName = GetEmail(i),
+                    Customer = new Customer()
+                    {
+                        Name = "Admin",
+                        Surname = "Admin",
+                        Address = "",
+                        Email = GetEmail(i)
+                    }
+                }).ToList();
+
+            foreach (var admin in admins)
+            {
+                var adminResult = await userManager.FindByNameAsync(admin.UserName!);
+                if (adminResult == null)
+                {
+                    await userManager.CreateAsync(admin, "password");
+                    await userManager.AddToRoleAsync(admin, nameof(Roles.Admin));
+                    await userManager.AddToRoleAsync(admin, nameof(Roles.User));
+                    await userManager.AddClaimAsync(admin, new Claim("CustomerId", admin.CustomerId.ToString()));
+                }
+            }
         }
 
         public static IServiceProvider CreateAzureBlobContainer(this IServiceProvider provider)
         {
             var azureSettings = provider.GetRequiredService<IOptions<AzureSettings>>().Value;
 
-            BlobServiceClient blobServiceClient = new BlobServiceClient(azureSettings.ImageConnection); 
+            BlobServiceClient blobServiceClient = new BlobServiceClient(azureSettings.ImageConnection);
             BlobContainerClient blobContainerClient = blobServiceClient
                 .GetBlobContainerClient(azureSettings.ImageContainer);
 

@@ -26,6 +26,5 @@ namespace WarehouseWebsite.Infrastructure.Data
 
             return await query.ToListAsync(cancellationToken: token);
         }
-
     }
 }

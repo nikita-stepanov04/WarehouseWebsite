@@ -1,4 +1,5 @@
 ﻿using Azure.Storage.Blobs;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Options;
@@ -15,19 +16,23 @@ namespace WarehouseWebsite.Infrastructure.Data
         private IItemRepository? _itemRepository;
         private IMissingItemRepository? _missingItemRepository;
         private IOrderRepository? _orderRepository;
+        private IOrderItemRepository? _orderItemRepository;
         private IAwaitingOrderRepository? _awaitingOrderRepository;
         private ICustomerRepository? _customerRepository;
         private IImageRepository? _imageRepository;
 
         private readonly DataContext _dbContext;
+
+        private IMediator? _mediator;
         private IDbContextTransaction? _transaction;
         private AzureSettings? _azureSettings;
 
         public UnitOfWork(DataContext context) => _dbContext = context;
 
-        public UnitOfWork(DataContext context, IOptions<AzureSettings> azureSettings)
+        public UnitOfWork(DataContext context, IMediator mediator, IOptions<AzureSettings> azureSettings)
         {
             _dbContext = context;
+            _mediator = mediator;
             _azureSettings = azureSettings.Value;
         }
 
@@ -36,6 +41,8 @@ namespace WarehouseWebsite.Infrastructure.Data
         public IMissingItemRepository MissingItemRepository => _missingItemRepository ??= new MissingItemRepository(_dbContext);
 
         public IOrderRepository OrderRepository => _orderRepository ??= new OrderRepository(_dbContext);
+
+        public IOrderItemRepository OrderItemRepository => _orderItemRepository ??= new OrderItemRepository(_dbContext);
 
         public IAwaitingOrderRepository AwaitingOrderRepository => _awaitingOrderRepository ??= new AwaitingOrderRepository(_dbContext);
 
@@ -74,10 +81,14 @@ namespace WarehouseWebsite.Infrastructure.Data
             }
         }
 
-        public async Task SaveAsync() => await _dbContext.SaveChangesAsync();
+        public async Task SaveAsync() => await SaveAsync(default);
 
         public async Task SaveAsync(CancellationToken cancellationToken)
         {
+            if (_mediator != null)
+            {
+                await _mediator.DispatchDomainEventsAsync(_dbContext);
+            }
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
 

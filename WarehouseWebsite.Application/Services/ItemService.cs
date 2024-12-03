@@ -5,6 +5,7 @@ using WarehouseWebsite.Domain.Filtering;
 using WarehouseWebsite.Domain.Interfaces;
 using WarehouseWebsite.Domain.Interfaces.Repositories;
 using WarehouseWebsite.Domain.Models.Items;
+using WarehouseWebsite.Domain.Models.Orders;
 
 namespace WarehouseWebsite.Application.Services
 {

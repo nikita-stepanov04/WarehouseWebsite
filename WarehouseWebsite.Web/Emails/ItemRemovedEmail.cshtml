@@ -1,0 +1,70 @@
+﻿@using System.Globalization
+@using WarehouseWebsite.Domain.Models.Items
+@using WarehouseWebsite.Application.Emails
+
+@model Item
+@{
+    ViewBag.Title = $"{Model.Name} was removed";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>@ViewBag.Title</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333333;
+        }
+
+        .item-info {
+            margin-top: 20px;
+        }
+
+        .item-info p {
+            margin: 5px 0;
+        }
+
+        .item-info img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Important Update Regarding Your Order</h1>
+        <p>Dear Customer,</p>
+        <p>We regret to inform you that the following item has been removed from your pending order as it will no longer be available:</p>
+
+        <div class="item-info">
+            <h2>@Model.Name</h2>
+            @if (!string.IsNullOrEmpty(Model.PhotoUrl))
+            {
+                <img src="@Model.PhotoUrl" alt="@Model.Name" />
+            }
+            <p><strong>Price:</strong> @Model.Price.ToString("C", new CultureInfo("en-Us"))</p>
+            <p><strong>Weight:</strong> @Model.Weight.ToString("F2") kg</p>
+            <p><strong>Category:</strong> @Model.Category.ToString()</p>
+        </div>
+
+        <p>We apologize for any inconvenience this may cause. If you have any questions or need assistance, please contact our customer support.</p>
+        <p>Thank you for your understanding.</p>
+        <p>Sincerely,</p>
+        <p>Your Company Team</p>
+    </div>
+</body>
+</html>

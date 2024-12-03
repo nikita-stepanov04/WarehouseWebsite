@@ -52,6 +52,7 @@ namespace WarehouseWebsite.Infrastructure.Migrations
                     Price = table.Column<decimal>(type: "numeric", nullable: false),
                     Weight = table.Column<double>(type: "double precision", nullable: false),
                     Category = table.Column<int>(type: "integer", nullable: false),
+                    IsRemoved = table.Column<bool>(type: "boolean", nullable: false),
                     PhotoBlobId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>

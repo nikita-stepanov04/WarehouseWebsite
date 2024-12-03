@@ -25,7 +25,8 @@ namespace WarehouseWebsite.Tests
                    x.Price == y.Price &&
                    x.Weight == y.Weight &&
                    x.Category == y.Category &&
-                   x.PhotoBlobId == y.PhotoBlobId;
+                   x.PhotoBlobId == y.PhotoBlobId &&
+                   x.IsRemoved == y.IsRemoved;
         }
 
         public int GetHashCode(Item obj)

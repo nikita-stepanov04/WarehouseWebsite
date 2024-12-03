@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using WarehouseWebsite.Application.Interfaces;
+using WarehouseWebsite.Domain.DomainEvents;
 using WarehouseWebsite.Domain.Filtering;
 using WarehouseWebsite.Domain.Interfaces;
 using WarehouseWebsite.Domain.Interfaces.Repositories;
@@ -12,6 +13,7 @@ namespace WarehouseWebsite.Application.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IOrderRepository _orderRepository;
+        private readonly IOrderItemRepository _orderItemRepository;
         private readonly IAwaitingOrderRepository _awaitingOrderRepository;
         private readonly IMissingItemRepository _missingItemRepository;
         private readonly IItemRepository _itemRepository;
@@ -20,6 +22,7 @@ namespace WarehouseWebsite.Application.Services
         {
             _unitOfWork = unitOfWork;
             _orderRepository = unitOfWork.OrderRepository;
+            _orderItemRepository = unitOfWork.OrderItemRepository;
             _awaitingOrderRepository = unitOfWork.AwaitingOrderRepository;
             _itemRepository = unitOfWork.ItemRepository;
             _missingItemRepository = unitOfWork.MissingItemRepository;
@@ -43,6 +46,31 @@ namespace WarehouseWebsite.Application.Services
             return await _orderRepository.GetTransitingOrdersAsync(filter, token);
         }
 
+        public async Task RemoveDeletedItemFromAwaitingOrders(Item item)
+        {
+            var filter = new FilterParameters<OrderItem>
+            {
+                Take = 10,
+                Filter = oi => oi.ItemId == item.Id && oi.AwaitingOrderId != null
+            };
+            while (true)
+            {
+                var orderItems = ((await _orderItemRepository.GetOrderItemsAsync(filter, default))
+                    as List<OrderItem>)!;
+
+                if (orderItems.Count == 0)
+                    break;
+
+                foreach (var orderItem in orderItems)
+                {
+                    _orderItemRepository.Remove(orderItem);
+                    orderItem.RaiseDomainEvent(new ItemRemovedFromOrderEvent(item, orderItem.AwaitingOrder!));
+                }
+                await _unitOfWork.SaveAsync();
+                _unitOfWork.ClearContext();
+            }
+        }
+
         public async Task StartShippingItemsAsync()
         {
             var jobExecutionStartTime = DateTime.UtcNow;
@@ -58,7 +86,7 @@ namespace WarehouseWebsite.Application.Services
                     filter, token: default, withItems: false)) as List<AwaitingOrder>)!;
 
                 if (awaitingOrders.Count == 0)
-                    break;                
+                    break;
 
                 foreach (var awaitingOrder in awaitingOrders)
                 {
@@ -68,16 +96,16 @@ namespace WarehouseWebsite.Application.Services
                         var token = cancellationSource.Token;
                         //var token = CancellationToken.None;
                         await _unitOfWork.BeginTransactionAsync(IsolationLevel.RepeatableRead, token);
-                        
-                        var itemIds = awaitingOrder.OrderItems.Select(i => i.ItemId).ToList();                        
+
+                        var itemIds = awaitingOrder.OrderItems.Select(i => i.ItemId).ToList();
                         var items = await _itemRepository.GetItemsByIdsAsNoTracking(itemIds, token);
-                        
+
                         // temporary store for updated item quantity,
                         // is not applied to items if order is still awaiting
                         Dictionary<Item, int> itemNewQuantityDict = new();
                         bool isAwaiting = false;
                         foreach (var orderItem in awaitingOrder.OrderItems)
-                        {                            
+                        {
                             Item item = items.First(i => i.Id == orderItem.ItemId);
                             if (item.Quantity < orderItem.Quantity)
                             {
@@ -95,7 +123,7 @@ namespace WarehouseWebsite.Application.Services
                             await _unitOfWork.RollbackTransactionAsync();
                             filter.Skip++;
                         }
-                        else 
+                        else
                         {
                             var order = awaitingOrder.ToOrder();
                             await _orderRepository.AddAsync(order);
@@ -110,7 +138,7 @@ namespace WarehouseWebsite.Application.Services
                         }
                         _unitOfWork.DetachItems();
                     }
-                    catch 
+                    catch
                     {
                         await _unitOfWork.RollbackTransactionAsync();
                     }

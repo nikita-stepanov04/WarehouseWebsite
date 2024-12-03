@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using WarehouseWebsite.Application.Emails;
 using WarehouseWebsite.Infrastructure.Models;
 using WarehouseWebsite.Web.Identity;
 
@@ -15,6 +16,11 @@ namespace WarehouseWebsite.Web.Configure
 
             services.AddOptions<AzureSettings>()
                 .BindConfiguration("Azure")
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
+
+            services.AddOptions<FluentEmailSettings>()
+                .BindConfiguration("Smtp")
                 .ValidateDataAnnotations()
                 .ValidateOnStart();
 

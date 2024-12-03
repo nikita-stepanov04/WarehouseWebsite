@@ -8,6 +8,7 @@ namespace WarehouseWebsite.Domain.Interfaces
         IItemRepository ItemRepository { get; }
         IMissingItemRepository MissingItemRepository { get; }
         IOrderRepository OrderRepository { get; }
+        IOrderItemRepository OrderItemRepository { get; }
         IAwaitingOrderRepository AwaitingOrderRepository { get; }
         ICustomerRepository CustomerRepository { get; }
         IImageRepository ImageRepository { get; }

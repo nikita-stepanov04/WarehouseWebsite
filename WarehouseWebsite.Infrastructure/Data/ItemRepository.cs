@@ -17,9 +17,15 @@ namespace WarehouseWebsite.Infrastructure.Data
         {
             List<Item> items = await DbContext.Items
                 .WithFilter(filter)
+                .Where(i => !i.IsRemoved)
                 .SelectWithoutDescription()
                 .ToListAsync(cancellationToken: token);
             return items;
+        }
+
+        public override void Remove(Item item)
+        {
+            item.IsRemoved = true;
         }
 
         public void UpdateQuantity(Item item)

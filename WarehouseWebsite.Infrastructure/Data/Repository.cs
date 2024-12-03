@@ -24,7 +24,7 @@ namespace WarehouseWebsite.Infrastructure.Data
             return await DbContext.Set<TEntity>().FindAsync(id);
         }
 
-        public void Remove(TEntity entity)
+        public virtual void Remove(TEntity entity)
         {
             DbContext.Set<TEntity>().Remove(entity);
         }

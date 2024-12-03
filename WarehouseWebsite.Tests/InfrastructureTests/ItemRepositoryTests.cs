@@ -1,4 +1,5 @@
-﻿using WarehouseWebsite.Domain.Filtering;
+﻿using System.Runtime.InteropServices;
+using WarehouseWebsite.Domain.Filtering;
 using WarehouseWebsite.Domain.Models.Items;
 using WarehouseWebsite.Infrastructure.Data;
 using WarehouseWebsite.Infrastructure.Models;
@@ -45,6 +46,21 @@ namespace WarehouseWebsite.Tests.InfrastructureTests
 
             var item = await itemRepository.GetByIdShortenAsync(Guids[1]);
             var expected = GetExpectedItems().First(i => i.Id == Guids[1]);
+
+            Assert.That(item, Is.EqualTo(expected).Using(new ItemEqualityComparer()));
+        }
+        
+        [Test]
+        public async Task ItemRepositoryRemoveSetsItemAsRemoved()
+        {
+            using var context = new DataContext(GetUnitTestDbOptions());
+            var itemRepository = new ItemRepository(context);
+
+            var item = await itemRepository.GetByIdAsync(Guids[1]);
+            itemRepository.Remove(item);
+            context.SaveChanges();
+
+            var expected = await itemRepository.GetByIdAsync(Guids[1]);
 
             Assert.That(item, Is.EqualTo(expected).Using(new ItemEqualityComparer()));
         }        
