@@ -65,6 +65,7 @@ namespace WarehouseWebsite.Web
 
             app.MapControllers();
 
+            Task.Delay(TimeSpan.FromSeconds(10));
             app.Run();
         }
     }

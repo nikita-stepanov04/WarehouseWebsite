@@ -13,7 +13,10 @@ namespace WarehouseWebsite.Infrastructure.Data
             : base(context) { }
 
         public async Task<IEnumerable<AwaitingOrder>> GetAwaitingOrdersAsync(
-            FilterParameters<AwaitingOrder> filter, CancellationToken token, bool withItems = true)
+            FilterParameters<AwaitingOrder> filter,
+            CancellationToken token,
+            bool withItems = true,
+            bool withCustomer = false)
         {
             IQueryable<AwaitingOrder> query = DbContext.AwaitingOrders;
 
@@ -21,6 +24,9 @@ namespace WarehouseWebsite.Infrastructure.Data
                 query = query.Include(o => o.OrderItems).ThenInclude(oi => oi.Item);
             else
                 query = query.Include(o => o.OrderItems);
+
+            if (withCustomer)
+                query = query.Include(o => o.Customer);
 
             query = query.WithFilter(filter);
 

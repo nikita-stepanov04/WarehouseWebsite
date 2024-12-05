@@ -48,23 +48,29 @@ namespace WarehouseWebsite.Application.Services
 
         public async Task RemoveDeletedItemFromAwaitingOrders(Item item)
         {
-            var filter = new FilterParameters<OrderItem>
+            var filter = new FilterParameters<AwaitingOrder>
             {
-                Take = 10,
-                Filter = oi => oi.ItemId == item.Id && oi.AwaitingOrderId != null
+                Take = 2,
+                Filter = o => o.OrderItems.Select(oi => oi.ItemId).Contains(item.Id)
             };
             while (true)
             {
-                var orderItems = ((await _orderItemRepository.GetOrderItemsAsync(filter, default))
-                    as List<OrderItem>)!;
+                var awaitingOrders = ((await _awaitingOrderRepository.GetAwaitingOrdersAsync(
+                    filter, token: default, withItems: false, withCustomer: true)) as List<AwaitingOrder>)!;
 
-                if (orderItems.Count == 0)
+                if (awaitingOrders.Count == 0)
                     break;
 
-                foreach (var orderItem in orderItems)
+                foreach (var awaitingOrder in awaitingOrders)
                 {
+                    var orderItem = awaitingOrder.OrderItems.First(oi => oi.ItemId == item.Id);
                     _orderItemRepository.Remove(orderItem);
                     orderItem.RaiseDomainEvent(new ItemRemovedFromOrderEvent(item, orderItem.AwaitingOrder!));
+
+                    awaitingOrder.TotalPrice -= orderItem.Price * orderItem.Quantity;
+
+                    if (!awaitingOrder.OrderItems.Any())
+                        _awaitingOrderRepository.Remove(awaitingOrder);
                 }
                 await _unitOfWork.SaveAsync();
                 _unitOfWork.ClearContext();

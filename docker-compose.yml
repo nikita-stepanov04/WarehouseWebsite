@@ -2,6 +2,22 @@ version: '3.8'
 
 services:
 
+  api:
+    build:
+      context: .
+      dockerfile: WarehouseWebsite.Web/Dockerfile
+    container_name: api
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+    depends_on:
+      - postgres
+      - azurite
+      - smtp
+    networks:
+      - net
+
   postgres:
     image: postgres:latest
     container_name: postgres
@@ -11,6 +27,8 @@ services:
       POSTGRES_DB: WarehouseDb
     ports:
       - "5432:5432"
+    networks:
+      - net
 
   azurite:
     image: mcr.microsoft.com/azure-storage/azurite
@@ -18,6 +36,8 @@ services:
     ports:
       - "10000:10000"
     command: "azurite --loose --blobHost 0.0.0.0 --blobPort 10000 --location /workspace --debug /workspace/debug.log"
+    networks:
+      - net
   
   smtp: 
     image: mailhog/mailhog 
@@ -25,3 +45,8 @@ services:
     ports: 
       - "8025:8025" # MailHog Web UI
       - "1025:1025" # SMTP
+    networks:
+      - net
+
+networks:
+  net:
