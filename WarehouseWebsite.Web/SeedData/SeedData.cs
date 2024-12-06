@@ -43,13 +43,16 @@ namespace WarehouseWebsite.Web.SeedData
                     new Item { Name = "Novel", Quantity = 25, Description = "Bestselling novel by a famous author", Price = 15.99m, Weight = 0.4, Category = ItemCategory.Books, PhotoBlobId = Guid.NewGuid() }
                 };
 
-                string imgPath = $"{AppContext.BaseDirectory}\\SeedData\\img";
+                string imgPath = Path.Combine(AppContext.BaseDirectory, "SeedData", "img");
                 foreach((int i, var item) in items.Index())
                 {
                     var memoryStream = new MemoryStream();
-                    memoryStream.Write(File.ReadAllBytes($"{imgPath}\\{i + 1}.jpg"));
+                    string file = Path.Combine(imgPath, $"{i + 1}.jpg");
+
+                    memoryStream.Write(File.ReadAllBytes(file));
                     memoryStream.Flush();
                     memoryStream.Position = 0;
+
                     await itemService.AddItemAsync(item, memoryStream);
                 }
             }

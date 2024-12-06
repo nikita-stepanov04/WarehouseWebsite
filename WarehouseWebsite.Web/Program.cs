@@ -2,7 +2,6 @@ using WarehouseWebsite.Application.Emails;
 using WarehouseWebsite.Application.EventHandlers;
 using WarehouseWebsite.Application.Interfaces;
 using WarehouseWebsite.Application.Services;
-using WarehouseWebsite.Domain.DomainEvents;
 using WarehouseWebsite.Domain.Interfaces;
 using WarehouseWebsite.Domain.Interfaces.Repositories;
 using WarehouseWebsite.Infrastructure.Data;
@@ -37,7 +36,7 @@ namespace WarehouseWebsite.Web
             builder.Services.MapEmailViesAssembly(typeof(Program).Assembly);
             builder.Services.SetUpFluentEmail(builder.Configuration);
 
-            builder.Services.AddMediatR(opts => 
+            builder.Services.AddMediatR(opts =>
                 opts.RegisterServicesFromAssembly(typeof(ItemRemovedFromOrderEventHandler).Assembly));
 
             builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
@@ -63,9 +62,10 @@ namespace WarehouseWebsite.Web
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.MapGet("/", async context => context.Response.Redirect("/swagger/index.html", false));
+
             app.MapControllers();
 
-            Task.Delay(TimeSpan.FromSeconds(10));
             app.Run();
         }
     }
