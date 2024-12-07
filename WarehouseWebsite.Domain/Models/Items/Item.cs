@@ -19,7 +19,5 @@ namespace WarehouseWebsite.Domain.Models.Items
         public Guid PhotoBlobId { get; set; }
 
         public string? PhotoUrl { get; set; }
-
-        public IEnumerable<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
     }
 }

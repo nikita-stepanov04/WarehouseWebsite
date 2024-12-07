@@ -83,25 +83,23 @@ namespace WarehouseWebsite.Application.Services
                 var item = await _itemRepository.GetByIdAsync(id);
 
                 if (item == null) return;
+                
+                var missingItem = await _missingItemRepository.GetByItemIdNotPopulated(id);
 
-                if (item.Quantity == 0)
+                if (missingItem != null)
                 {
-                    var missingItem = await _missingItemRepository.GetByItemIdNotPopulated(id);
-
-                    if (missingItem != null)
+                    if (missingItem.Missing > addQuantity)
                     {
-                        if (missingItem.Missing > addQuantity)
-                        {
-                            missingItem.Missing -= addQuantity;
-                            addQuantity = 0;
-                        }
-                        else
-                        {
-                            _missingItemRepository.Remove(missingItem);
-                            addQuantity -= missingItem.Missing;
-                        }
+                        missingItem.Missing -= addQuantity;
+                        addQuantity = 0;
+                    }
+                    else
+                    {
+                        _missingItemRepository.Remove(missingItem);
+                        addQuantity -= missingItem.Missing;
                     }
                 }
+                
                 item.Quantity += addQuantity;
 
                 await _unitOfWork.SaveAsync(token);

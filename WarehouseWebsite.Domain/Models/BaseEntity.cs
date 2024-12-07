@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using System.Text.Json.Serialization;
 
 namespace WarehouseWebsite.Domain.Models
 {
@@ -6,8 +7,10 @@ namespace WarehouseWebsite.Domain.Models
     {
         public Guid Id { get; init; }
 
+        [JsonIgnore]
         private readonly List<INotification> _domainEvents = new();
 
+        [JsonIgnore]
         public IReadOnlyCollection<INotification> DomainEvents => _domainEvents.AsReadOnly();
 
         public void RaiseDomainEvent(INotification domainEvent)
