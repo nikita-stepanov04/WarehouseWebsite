@@ -1,38 +1,38 @@
-import {Component, OnInit} from '@angular/core';
+import { Component } from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormHelperService} from '../forms/form-helper.service';
 import {AuthService} from '../auth/auth.service';
-import {TokenStorageService} from '../auth/token-storage.service';
 import {LoginInfo} from '../auth/login-info';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit{
-  loggedIn: boolean = false;
-  roles: string[] = [];
-  form: any = {};
+export class LoginComponent {
+  loginForm: FormGroup;
 
-  constructor(private authService: AuthService, private tokenService: TokenStorageService) {}
-
-  ngOnInit(): void {
-    if (this.tokenService.getAccessToken()) {
-      this.loggedIn = true;
-      this.roles = this.tokenService.getUserRoles();
-    }
+  constructor(
+    private authService: AuthService,
+    private fb: FormBuilder,
+    private router: Router,
+    public fh: FormHelperService
+  ) {
+    this.authService.logout();
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(32)]],
+    });
   }
 
-  onSubmit() {
-    let loginInfo = new LoginInfo(this.form.email, this.form.password);
-    this.authService.logIn(loginInfo).subscribe({
-      next: data => {
-        this.loggedIn = true;
-        console.log(data.accessToken)
-        this.roles = data.roles;
-      },
-      error: error => {
-        console.log(error.error.message);
-      }
-    });
+  onSubmit(): void {
+    const formValue = this.loginForm.value;
+    this.authService
+      .logIn(new LoginInfo(formValue.email, formValue.password))
+      .subscribe({
+        next: () => this.router.navigate(['/home']),
+        error: (err) => console.log(err.error.message)
+      });
   }
 }

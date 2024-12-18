@@ -1,0 +1,16 @@
+<div [formGroup]="parentForm">
+  <label class="form-label">{{label}}</label>
+  <input
+    type="text"
+    class="form-control"
+    placeholder="Enter your second name"
+    formControlName="{{controlName}}"
+    [class.is-invalid]="fh.isInvalid(control)"
+  >
+  <div class="invalid-feedback">
+    <span *ngIf="fh.hasError(control, 'required')">Second name is required</span>
+    <span *ngIf="fh.hasError(control, 'minlength')">Second name minimum length is 1 signs</span>
+    <span *ngIf="fh.hasError(control, 'maxlength')">Second name maximum length is 32 signs</span>
+  </div>
+</div>
+

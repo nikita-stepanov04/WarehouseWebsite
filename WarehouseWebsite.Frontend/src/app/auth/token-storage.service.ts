@@ -12,10 +12,6 @@ const TOKEN_STORE = window.localStorage;
 export class TokenStorageService {
   constructor() { }
 
-  public signOut() {
-    TOKEN_STORE.clear();
-  }
-
   public saveAccessToken(token: string) {
     TOKEN_STORE.removeItem(TOKEN_KEY);
     TOKEN_STORE.setItem(TOKEN_KEY, token);
@@ -49,5 +45,17 @@ export class TokenStorageService {
 
   public logout() {
     TOKEN_STORE.clear();
+  }
+
+  public isAuthorized(): boolean {
+    const token = TOKEN_STORE.getItem(TOKEN_KEY);
+    return token !== null && token !== '';
+  }
+
+  public isInRole(role: string): boolean {
+    const roles = TOKEN_STORE.getItem(USER_ROLE_KEY);
+    if (roles === null) return false;
+    const rolesArray = JSON.parse(roles) as string[];
+    return rolesArray.includes(role);
   }
 }

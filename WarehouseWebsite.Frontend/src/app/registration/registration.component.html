@@ -1,1 +1,39 @@
-<p>registration works!</p>
+<app-auth-template>
+  <form class="form" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+    <h2 class="text-center mb-3">Registration</h2>
+    <div class="mb-3">
+      <app-email-input
+        label="Email"
+        controlName="email"
+        [parentForm]="registerForm">
+      </app-email-input>
+    </div>
+    <div class="mb-3">
+      <app-password-input
+        label="Password"
+        controlName="password"
+        [parentForm]="registerForm">
+      </app-password-input>
+    </div>
+    <div class="mb-3">
+      <app-name-input
+        label="Fist name"
+        controlName="name"
+        [parentForm]="registerForm">
+      </app-name-input>
+    </div>
+    <div class="mb-3">
+      <app-surname-input
+        label="Second name"
+        controlName="surname"
+        [parentForm]="registerForm">
+      </app-surname-input>
+    </div>
+    <div class="d-grid mt-4 mb-2">
+      <button class="btn btn-primary" [disabled]="registerForm.invalid">Register</button>
+      <a
+        class="link-secondary mt-2 text-center"
+        routerLink="/login">Log in</a>
+    </div>
+  </form>
+</app-auth-template>

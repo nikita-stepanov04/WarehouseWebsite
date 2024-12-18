@@ -22,7 +22,7 @@ export class HomeComponent implements OnInit {
   }
 
   logout() {
-    this.tokenService.signOut();
+    this.tokenService.logout();
     window.location.reload();
   }
 
