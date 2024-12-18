@@ -1,0 +1,11 @@
+<div *ngIf="info.accessToken; else loggedOut">
+  <p>Access token: {{info.accessToken}}</p>
+  <p>Refresh token: {{info.refreshToken}}</p>
+  <p>Roles: {{info.roles}}</p>
+  <button (click)="logout()">Logout</button>
+  <button (click)="test()">Test</button>
+</div>
+
+<ng-template #loggedOut>
+  <p>Please login</p>
+</ng-template>

@@ -64,14 +64,15 @@ namespace WarehouseWebsite.Web.Controllers
                 }                
                 token.Token = refreshToken;
                 token.Created = DateTime.UtcNow;
-                token.Expires = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationDays);                
+                token.Expires = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationDays);
+                token.IsRevoked = false;
 
                 user.RefreshToken = token;
                 var updateResult = await _userManager.UpdateAsync(user);
 
                 if (!updateResult.Succeeded) return BadRequest();
 
-                return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken });
+                return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken, Roles = roles });
             }
             return Unauthorized(new { Message = "Invalid password" });
         }

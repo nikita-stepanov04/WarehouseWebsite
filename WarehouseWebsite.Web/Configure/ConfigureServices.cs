@@ -37,5 +37,19 @@ namespace WarehouseWebsite.Web.Configure
             });
             return builder;
         }
+
+        public static IServiceCollection SetUpCors(this IServiceCollection services)
+        {
+            services.AddCors(opts =>
+            {
+                opts.AddPolicy("AllowAll", builder =>
+                {
+                    builder.AllowAnyMethod();
+                    builder.AllowAnyHeader();
+                    builder.AllowAnyOrigin();
+                });
+            });
+            return services;
+        }
     }
 }

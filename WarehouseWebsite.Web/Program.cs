@@ -32,6 +32,7 @@ namespace WarehouseWebsite.Web
             builder.Services.AddInfrastructureServices(builder.Configuration);
             builder.Services.SetUpIdentity(builder.Configuration);
             builder.Services.SetUpOptions();
+            builder.Services.SetUpCors();
 
             builder.Services.MapEmailViesAssembly(typeof(Program).Assembly);
             builder.Services.SetUpFluentEmail(builder.Configuration);
@@ -48,6 +49,8 @@ namespace WarehouseWebsite.Web
             builder.Services.AddScoped<JwtTokenService>();
 
             var app = builder.Build();
+
+            app.UseCors("AllowAll");
 
             app.Services.DatabaseMigrate();
             app.Services.CreateAzureBlobContainer();
