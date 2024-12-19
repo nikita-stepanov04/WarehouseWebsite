@@ -1,0 +1,42 @@
+<header>
+  <nav class="navbar fixed-top bg-body-tertiary">
+    <div class="container-xxl container-fluid">
+      <a class="navbar-brand" (click)="tokenService.logout()">
+        <span class="fw-semibold ms-2">Warehouse</span>
+      </a>
+      <div class="d-flex align-items-center">
+        <div *ngIf="tokenService.isAuthorized(); else unauthorized">
+          <a class="position-relative me-3 d-flex align-items-center text-decoration-none link-secondary"
+             (click)="tokenService.logout()">
+            <i class="fa-solid fa-user-slash fa-xl"></i>
+          </a>
+        </div>
+        <ng-template #unauthorized>
+          <a class="position-relative me-3 d-flex align-items-center text-decoration-none link-secondary"
+             routerLink="/login">
+            <i class="fa-solid fa-user fa-xl"></i>
+          </a>
+        </ng-template>
+        <a class="position-relative d-flex me-3 align-items-center text-decoration-none link-secondary">
+          <div class="position-relative align-items-start">
+            <i class="fa-solid fa-cart-shopping fa-xl"></i>
+            <span class="position-absolute translate-middle badge rounded-pill bg-danger"
+                style="left: 110%;">
+              {{cartService.cartQuantityShorten()}}
+            </span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </nav>
+</header>
+<main class="mt-5">
+  <div class="container-xxl container-fluid py-lg-3 py-xxl-5">
+    <div class="row">
+      <ng-content></ng-content>
+    </div>
+  </div>
+</main>
+<app-footer></app-footer>
+
+

@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import {ChangeDetectorRef, Injectable} from '@angular/core';
+import {Router} from '@angular/router';
 
 const TOKEN_KEY = "AccessToken";
 const REFRESH_TOKEN_KEY = "RefreshToken";
@@ -10,7 +11,7 @@ const TOKEN_STORE = window.localStorage;
   providedIn: 'root'
 })
 export class TokenStorageService {
-  constructor() { }
+  constructor(private router: Router) {}
 
   public saveAccessToken(token: string) {
     TOKEN_STORE.removeItem(TOKEN_KEY);
@@ -45,6 +46,10 @@ export class TokenStorageService {
 
   public logout() {
     TOKEN_STORE.clear();
+    const currentUrl = this.router.url;
+    if (this.isAuthEndpoint(currentUrl)) {
+      this.router.navigate(['/login']);
+    }
   }
 
   public isAuthorized(): boolean {
@@ -57,5 +62,16 @@ export class TokenStorageService {
     if (roles === null) return false;
     const rolesArray = JSON.parse(roles) as string[];
     return rolesArray.includes(role);
+  }
+
+  private isAuthEndpoint(currentUrl: string) {
+    var routes = this.router.config
+      .filter(route => route.data && route.data['expectedRole'])
+      .map(route => `/${route.path}`);
+    console.log(routes);
+    console.log(currentUrl);
+    routes
+      .some(route => route.startsWith(currentUrl));
+    return false;
   }
 }

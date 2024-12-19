@@ -17,6 +17,7 @@ import { NameInputComponent } from './common/inputs/name-input/name-input.compon
 import { SurnameInputComponent } from './common/inputs/surname-input/surname-input.component';
 import { GlobalErrorComponent } from './error/global-error/global-error.component'
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { MainTemplateComponent } from './common/main-template/main-template.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
     PasswordInputComponent,
     NameInputComponent,
     SurnameInputComponent,
-    GlobalErrorComponent
+    GlobalErrorComponent,
+    MainTemplateComponent
   ],
   imports: [
     BrowserModule,

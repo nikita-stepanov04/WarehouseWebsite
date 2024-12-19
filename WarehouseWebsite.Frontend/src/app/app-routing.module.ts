@@ -9,10 +9,10 @@ const routes: Routes = [
   {
     path: 'home',
     component: HomeComponent,
-    canActivate: [AuthGuardService],
-    data: {
-      expectedRole: 'User'
-    }
+    // canActivate: [AuthGuardService],
+    // data: {
+    //   expectedRole: 'User'
+    // }
   },
   {
     path: 'login',

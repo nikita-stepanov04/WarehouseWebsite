@@ -1,10 +1,10 @@
-<div *ngIf="info.accessToken; else loggedOut">
-  <p>Access token: {{info.accessToken}}</p>
-  <p>Refresh token: {{info.refreshToken}}</p>
-  <p>Roles: {{info.roles}}</p>
-  <button (click)="logout()">Logout</button>
-  <button (click)="test()">Test</button>
-</div>
+<app-main-template>
+  <div *ngIf="tokenService.isAuthorized(); else loggedOut">
+    <p>Access token: {{info.accessToken}}</p>
+    <p>Refresh token: {{info.refreshToken}}</p>
+    <p>Roles: {{info.roles}}</p>
+  </div>
+</app-main-template>
 
 <ng-template #loggedOut>
   <p>Please login</p>

@@ -14,7 +14,7 @@ namespace WarehouseWebsite.Web.Models
         public Order GetOrder()
         {
             return new Order
-            {
+            { 
                 OrderItems = Request.Select(oir => new OrderItem()
                 {
                     ItemId = oir.ItemId,
