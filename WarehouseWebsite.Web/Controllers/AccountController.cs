@@ -36,7 +36,7 @@ namespace WarehouseWebsite.Web.Controllers
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
 
-            if (user == null) return Unauthorized(new { Message = "Invalid username" });
+            if (user == null) return Unauthorized(new { Message = "Invalid email" });
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
 
@@ -80,6 +80,9 @@ namespace WarehouseWebsite.Web.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
+            var findResult = await _userManager.FindByEmailAsync(request.Email);
+            if (findResult != null) return BadRequest(new { Message = "User with specified email has already been registered" });
+
             var user = new AppUser
             {
                 Email = request.Email,

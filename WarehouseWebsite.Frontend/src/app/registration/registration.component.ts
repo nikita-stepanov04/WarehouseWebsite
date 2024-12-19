@@ -4,6 +4,7 @@ import {AuthService} from '../auth/auth.service';
 import {Router} from '@angular/router';
 import {FormHelperService} from '../forms/form-helper.service';
 import { RegisterInfo } from '../auth/register-info';
+import {ErrorService} from '../error/error.service';
 
 @Component({
   selector: 'app-registration',
@@ -17,6 +18,7 @@ export class RegistrationComponent {
     private authService: AuthService,
     private fb: FormBuilder,
     private router: Router,
+    private errorService: ErrorService,
     public fh: FormHelperService
   ) {
     this.registerForm = this.fb.group({
@@ -37,7 +39,7 @@ export class RegistrationComponent {
         formValue.surname)
     ).subscribe({
       next: () => this.router.navigate(['/login']),
-      error: (err) => console.log(err.error.message)
+      error: (err) => this.errorService.handle(err.error.message)
     });
   }
 }

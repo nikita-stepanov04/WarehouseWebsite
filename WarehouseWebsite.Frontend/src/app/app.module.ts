@@ -14,7 +14,9 @@ import { FooterComponent } from './common/footer/footer.component';
 import { EmailInputComponent } from './common/inputs/email-input/email-input.component';
 import { PasswordInputComponent } from './common/inputs/password-input/password-input.component';
 import { NameInputComponent } from './common/inputs/name-input/name-input.component';
-import { SurnameInputComponent } from './common/inputs/surname-input/surname-input.component'
+import { SurnameInputComponent } from './common/inputs/surname-input/surname-input.component';
+import { GlobalErrorComponent } from './error/global-error/global-error.component'
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -27,13 +29,15 @@ import { SurnameInputComponent } from './common/inputs/surname-input/surname-inp
     EmailInputComponent,
     PasswordInputComponent,
     NameInputComponent,
-    SurnameInputComponent
+    SurnameInputComponent,
+    GlobalErrorComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    BrowserAnimationsModule
   ],
   providers: [
     httpInterceptorProviders,
