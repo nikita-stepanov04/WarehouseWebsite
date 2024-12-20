@@ -21,6 +21,10 @@ import { MainTemplateComponent } from './common/main-template/main-template.comp
 import { ItemComponent } from './shopping/item/item.component';
 import { ItemCategoryPipe } from './shopping/item-category.pipe';
 import { PaginationComponent } from './common/pagination/pagination.component';
+import { CartComponent } from './shopping/cart/cart.component';
+import { CartItemComponent } from './shopping/cart-item/cart-item.component';
+import { ModalComponent } from './common/modal/modal.component';
+import { ItemDetailedComponent } from './shopping/item-detailed/item-detailed.component';
 
 @NgModule({
   declarations: [
@@ -35,10 +39,15 @@ import { PaginationComponent } from './common/pagination/pagination.component';
     NameInputComponent,
     SurnameInputComponent,
     GlobalErrorComponent,
+    ModalComponent,
     MainTemplateComponent,
     ItemComponent,
     ItemCategoryPipe,
-    PaginationComponent
+    PaginationComponent,
+    CartComponent,
+    CartItemComponent,
+    ModalComponent,
+    ItemDetailedComponent
   ],
   imports: [
     BrowserModule,

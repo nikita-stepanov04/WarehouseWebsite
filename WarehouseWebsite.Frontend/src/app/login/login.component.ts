@@ -5,6 +5,7 @@ import {AuthService} from '../auth/auth.service';
 import {LoginInfo} from '../auth/login-info';
 import {Router} from '@angular/router';
 import {ErrorService} from '../error/error.service';
+import {TokenStorageService} from '../auth/token-storage.service';
 
 @Component({
   selector: 'app-login',
@@ -18,10 +19,11 @@ export class LoginComponent{
     private authService: AuthService,
     private fb: FormBuilder,
     private router: Router,
+    private tokenService: TokenStorageService,
     private errorService: ErrorService,
     public fh: FormHelperService
   ) {
-    this.authService.logout();
+    this.tokenService.clearTokens();
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(32)]],
@@ -33,10 +35,11 @@ export class LoginComponent{
     this.authService
       .logIn(new LoginInfo(formValue.email, formValue.password))
       .subscribe({
-        next: () => this.router.navigate(['/home']),
-        error: (err) => {
-          this.errorService.handle(err.error.message)
-        }
+        next: () => {
+          this.router.navigate(['/home']);
+          this.errorService.handleSuccess('Successfully logged in');
+        },
+        error: (err) => this.errorService.handle(err)
       });
   }
 }

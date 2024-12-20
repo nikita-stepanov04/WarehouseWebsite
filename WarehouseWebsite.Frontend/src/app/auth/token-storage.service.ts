@@ -1,5 +1,6 @@
-import {ChangeDetectorRef, Injectable} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Router} from '@angular/router';
+import {ErrorService} from '../error/error.service';
 
 const TOKEN_KEY = "AccessToken";
 const REFRESH_TOKEN_KEY = "RefreshToken";
@@ -11,7 +12,7 @@ const TOKEN_STORE = window.localStorage;
   providedIn: 'root'
 })
 export class TokenStorageService {
-  constructor(private router: Router) {}
+  constructor(private router: Router, private errorService: ErrorService) {}
 
   public saveAccessToken(token: string) {
     TOKEN_STORE.removeItem(TOKEN_KEY);
@@ -45,11 +46,18 @@ export class TokenStorageService {
   }
 
   public logout() {
-    TOKEN_STORE.clear();
+    this.clearTokens();
     const currentUrl = this.router.url;
     if (this.isAuthEndpoint(currentUrl)) {
       this.router.navigate(['/login']);
     }
+    this.errorService.handleSuccess('Successfully logged out');
+  }
+
+  public clearTokens() {
+    TOKEN_STORE.setItem(TOKEN_KEY, '');
+    TOKEN_STORE.setItem(REFRESH_TOKEN_KEY, '');
+    TOKEN_STORE.setItem(USER_ROLE_KEY, '');
   }
 
   public isAuthorized(): boolean {

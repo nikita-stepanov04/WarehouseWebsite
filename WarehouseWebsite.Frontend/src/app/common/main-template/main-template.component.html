@@ -1,7 +1,7 @@
 <header>
   <nav class="navbar fixed-top bg-body-tertiary">
     <div class="container-xxl container-fluid">
-      <a class="navbar-brand" (click)="tokenService.logout()">
+      <a class="navbar-brand" routerLink="/">
         <span class="fw-semibold ms-2">Warehouse</span>
       </a>
       <div class="d-flex align-items-center">
@@ -19,7 +19,7 @@
         </ng-template>
         <a class="position-relative d-flex me-3 align-items-center text-decoration-none link-secondary">
           <div class="position-relative align-items-start">
-            <i class="fa-solid fa-cart-shopping fa-xl"></i>
+            <i class="fa-solid fa-cart-shopping fa-xl" routerLink="/cart"></i>
             <span class="position-absolute translate-middle badge rounded-pill bg-danger"
                 style="left: 110%;">
               {{cartService.cartQuantityShorten()}}

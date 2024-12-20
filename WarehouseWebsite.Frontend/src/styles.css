@@ -24,3 +24,8 @@
   border-radius: 1rem;
   box-shadow: 0 5px 8px rgba(56, 56, 56, 0.1);
 }
+
+.warehouse-image {
+  max-height: 10vh; width: auto;
+}
+

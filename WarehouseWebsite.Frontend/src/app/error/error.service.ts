@@ -8,8 +8,16 @@ export class ErrorService {
   error$ = new Subject<string>();
   success$ = new Subject<string>();
 
-  handle(message: string) {
-    this.error$.next(message);
+  handle(error: any) {
+    const message = error?.error?.message;
+    const status = error?.status;
+    if (message) {
+      this.error$.next(message);
+    } else if (status) {
+      this.error$.next(`Error ${status}`);
+    } else {
+      this.error$.next('Unexpected error happened')
+    }
   }
 
   handleSuccess(message: string) {

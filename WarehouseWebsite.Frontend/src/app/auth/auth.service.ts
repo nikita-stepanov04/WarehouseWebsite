@@ -47,8 +47,4 @@ export class AuthService {
         })
       )
   }
-
-  logout() {
-    this.tokenService.logout();
-  }
 }

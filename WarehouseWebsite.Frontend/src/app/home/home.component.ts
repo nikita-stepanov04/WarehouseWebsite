@@ -11,8 +11,8 @@ import { Pagination } from '../common/pagination/pagination';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  public items!: Item[];
-  public pagination = new Pagination(1, 8);
+  public items: Item[] = [];
+  public pagination = new Pagination(1, 8, 0);
   public nextDisabled = false;
 
   constructor(
@@ -31,7 +31,7 @@ export class HomeComponent implements OnInit {
           this.items = items as Item[];
           this.nextDisabled = this.items.length === 0;
         },
-        error: (err) => this.errorService.handle(err.error.message)
+        error: (err) => this.errorService.handle(err)
       });
   }
 

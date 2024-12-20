@@ -39,7 +39,7 @@ export class RegistrationComponent {
         formValue.surname)
     ).subscribe({
       next: () => this.router.navigate(['/login']),
-      error: (err) => this.errorService.handle(err.error.message)
+      error: (err) => this.errorService.handle(err)
     });
   }
 }
