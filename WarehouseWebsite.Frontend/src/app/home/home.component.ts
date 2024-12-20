@@ -1,24 +1,49 @@
-import {Component, OnInit} from '@angular/core';
-import {TokenStorageService} from '../auth/token-storage.service';
-import {HttpClient} from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Item } from '../shopping/item';
+import { environment } from '../../environments/environment';
+import { ErrorService } from '../error/error.service';
+import { Pagination } from '../common/pagination/pagination';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrl: './home.component.css'
+  styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  info: any;
+  public items!: Item[];
+  public pagination = new Pagination(1, 8);
+  public nextDisabled = false;
 
   constructor(
-    public tokenService: TokenStorageService,
-    private http: HttpClient) {}
+    private errorService: ErrorService,
+    private http: HttpClient
+  ) {}
 
   ngOnInit(): void {
-    this.info = {
-      accessToken: this.tokenService.getAccessToken(),
-      refreshToken: this.tokenService.getRefreshToken(),
-      roles: this.tokenService.getUserRoles()
-    };
+    this.loadItems();
+  }
+
+  private loadItems(): void {
+    this.http.get(`${environment.apiBasePath}/items?page=${this.pagination.page}&count=${this.pagination.count}`)
+      .subscribe({
+        next: (items) => {
+          this.items = items as Item[];
+          this.nextDisabled = this.items.length === 0;
+        },
+        error: (err) => this.errorService.handle(err.error.message)
+      });
+  }
+
+  previous(): void {
+    if (this.pagination.page > 1) {
+      this.pagination.page--;
+      this.loadItems();
+    }
+  }
+
+  next(): void {
+    this.pagination.page++;
+    this.loadItems();
   }
 }

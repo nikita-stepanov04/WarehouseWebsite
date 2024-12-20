@@ -6,12 +6,21 @@ import {Subject} from 'rxjs';
 })
 export class ErrorService {
   error$ = new Subject<string>();
+  success$ = new Subject<string>();
 
   handle(message: string) {
     this.error$.next(message);
   }
 
+  handleSuccess(message: string) {
+    this.success$.next(message);
+  }
+
   clear() {
     this.error$.next('');
+  }
+
+  clearSuccess() {
+    this.success$.next('');
   }
 }

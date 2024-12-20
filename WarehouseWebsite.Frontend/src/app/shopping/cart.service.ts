@@ -15,10 +15,10 @@ export class CartService {
     this.loadCart();
   }
 
-  public addItem(itemId: string) {
+  public addItem(itemId: string, quantity: number) {
     const item = this.cart.find(oi => oi.itemId === itemId);
     if (item) {
-      item.quantity++;
+      item.quantity += quantity;
     } else {
       this.cart.push(new OrderLine(itemId, 1));
     }

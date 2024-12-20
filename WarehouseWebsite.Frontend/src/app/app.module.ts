@@ -18,6 +18,9 @@ import { SurnameInputComponent } from './common/inputs/surname-input/surname-inp
 import { GlobalErrorComponent } from './error/global-error/global-error.component'
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { MainTemplateComponent } from './common/main-template/main-template.component';
+import { ItemComponent } from './shopping/item/item.component';
+import { ItemCategoryPipe } from './shopping/item-category.pipe';
+import { PaginationComponent } from './common/pagination/pagination.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +35,10 @@ import { MainTemplateComponent } from './common/main-template/main-template.comp
     NameInputComponent,
     SurnameInputComponent,
     GlobalErrorComponent,
-    MainTemplateComponent
+    MainTemplateComponent,
+    ItemComponent,
+    ItemCategoryPipe,
+    PaginationComponent
   ],
   imports: [
     BrowserModule,

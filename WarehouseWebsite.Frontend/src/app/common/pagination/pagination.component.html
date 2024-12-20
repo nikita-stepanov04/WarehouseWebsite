@@ -1,0 +1,17 @@
+<nav aria-label="...">
+  <ul class="pagination justify-content-center mb-0">
+    <li class="page-item" [ngClass]="pagination.page > 1 ? 'active': 'disabled'">
+      <a class="page-link" (click)="previous.emit()">
+        <i class="fa-solid fa-angle-left"></i>
+      </a>
+    </li>
+    <li class="page-item" style="width: 5vw">
+      <span class="page-link link-dark text-center">{{pagination.page}}</span>
+    </li>
+    <li class="page-item" [ngClass]="nextDisabled? 'disabled': 'active'">
+      <a class="page-link" (click)="next.emit()">
+        <i class="fa-solid fa-angle-right"></i>
+      </a>
+    </li>
+  </ul>
+</nav>

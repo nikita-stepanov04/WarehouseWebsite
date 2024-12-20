@@ -39,7 +39,8 @@ namespace WarehouseWebsite.Infrastructure.Data
         public string GetImageUri(Guid imageId)
         {
             var blobClient = BlobContainerClient.GetBlobClient(imageId.ToString());
-            return blobClient.Uri.ToString();
+            return blobClient.Uri.ToString()
+                .Replace("azurite", "localhost"); // just for local deployment
         }
 
         private BlobContainerClient BlobContainerClient => _blobServiceClient.GetBlobContainerClient(_containerName);

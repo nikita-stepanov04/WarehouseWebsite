@@ -21,6 +21,7 @@ import {animate, style, transition, trigger} from '@angular/animations';
 })
 export class GlobalErrorComponent implements OnInit {
   errorMessage: string = '';
+  successMessage: string = '';
 
   constructor(public errorService: ErrorService) {}
 
@@ -29,6 +30,13 @@ export class GlobalErrorComponent implements OnInit {
       this.errorMessage = message;
       if (message) {
         setTimeout(() => this.errorService.clear(), 3500);
+      }
+    });
+
+    this.errorService.success$.subscribe((message: string) => {
+      this.successMessage = message;
+      if (message) {
+        setTimeout(() => this.errorService.clearSuccess(), 1500);
       }
     });
   }

@@ -1,9 +1,19 @@
-<div class="position-relative">
-  <div *ngIf="errorMessage" @fadeInOut class="position-absolute top-0 start-0 w-100 d-flex justify-content-center">
+<div class="position-fixed top-0 start-0 w-100" style="z-index: 1050;">
+  <div *ngIf="errorMessage" @fadeInOut class="d-flex justify-content-center mt-0">
     <div class="bg-secondary text-danger fw-semibold d-flex justify-content-between align-items-center w-100">
       <div class="mx-auto">{{errorMessage}}</div>
       <div>
         <a class="me-1 link-light" (click)="errorService.clear()">
+          <i class="fa-solid fa-xmark"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="successMessage" @fadeInOut class="d-flex justify-content-center mt-0">
+    <div class="bg-success text-light fw-semibold d-flex justify-content-between align-items-center w-100">
+      <div class="mx-auto">{{successMessage}}</div>
+      <div>
+        <a class="me-1 link-light" (click)="errorService.clearSuccess()">
           <i class="fa-solid fa-xmark"></i>
         </a>
       </div>
