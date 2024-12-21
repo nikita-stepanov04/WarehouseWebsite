@@ -23,7 +23,7 @@ export class CartComponent implements OnInit {
     public cartService: CartService,
     private errorService: ErrorService,
     private modalService: ModalService,
-    private tokenService: TokenStorageService,
+    public tokenService: TokenStorageService,
     private router: Router) {}
 
   ngOnInit(): void {

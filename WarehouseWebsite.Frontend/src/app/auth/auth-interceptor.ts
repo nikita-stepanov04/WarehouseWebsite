@@ -38,22 +38,26 @@ export class AuthInterceptor implements HttpInterceptor {
             this.token.getAccessToken(),
             this.token.getRefreshToken()
           );
-          return this.authService.refresh(tokenInfo).pipe(
-            switchMap((newTokenInfo: TokenInfo) => {
-              this.isRefreshing = false;
-              const newAuthRequest = req.clone({ headers: req.headers.set(TOKEN_HEADER_KEY, `Bearer ${newTokenInfo.accessToken}`) });
-              return next.handle(newAuthRequest);
-            }),
-            catchError(err => {
-              this.isRefreshing = false;
-              this.token.clearTokens();
-              this.router.navigate(['/login']);
-              throw new Error(err);
-            })
-          );
+          if (tokenInfo.accessToken && tokenInfo.refreshToken) {
+            return this.authService.refresh(tokenInfo).pipe(
+              switchMap((newTokenInfo: TokenInfo) => {
+                this.isRefreshing = false;
+                const newAuthRequest = req.clone({ headers: req.headers.set(TOKEN_HEADER_KEY, `Bearer ${newTokenInfo.accessToken}`) });
+                return next.handle(newAuthRequest);
+              }),
+              catchError(err => {
+                this.isRefreshing = false;
+                this.token.clearTokens();
+                this.router.navigate(['/login']);
+                throw new Error(err);
+              })
+            );
+          } else {
+            throw error;
+          }
         } else {
           this.router.navigate(['/login']);
-          throw new Error();
+          throw error;
         }
       })
     );
