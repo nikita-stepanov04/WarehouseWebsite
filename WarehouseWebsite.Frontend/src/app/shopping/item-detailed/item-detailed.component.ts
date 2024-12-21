@@ -14,6 +14,8 @@ export class ItemDetailedComponent implements OnInit{
   private itemId: string | null = null;
   public item: Item | null = null;
 
+  public returnUrl: string = '';
+
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
@@ -21,7 +23,10 @@ export class ItemDetailedComponent implements OnInit{
     public cartService: CartService) {}
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe(params => this.itemId = params.get('id'));
+    this.route.paramMap.subscribe(params => {
+      this.itemId = params.get('id');
+      this.returnUrl = params.get('returnUrl') ?? '/';
+    });
 
     this.http.get(`${environment.apiBasePath}/items/${this.itemId}`)
       .subscribe({
