@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using WarehouseWebsite.Application.Interfaces;
 using WarehouseWebsite.Domain.Models.Orders;
 using WarehouseWebsite.Infrastructure.Jobs;
@@ -13,10 +14,14 @@ namespace WarehouseWebsite.Web.Controllers
     public class OrdersController : WarehouseControllerBase
     {
         private readonly IOrderService _orderService;
+        private readonly ICustomerService _customerService;
 
-        public OrdersController(IOrderService orderService)
+        public OrdersController(
+            IOrderService orderService,
+            ICustomerService customerService)
         {
             _orderService = orderService;
+            _customerService = customerService;
         }
 
         [HttpPost("place")]
@@ -24,10 +29,25 @@ namespace WarehouseWebsite.Web.Controllers
             [FromBody] OrderRequest request)
         {
             Guid customerId = UserCustomerId;
+
+            if (request.CustomerRequest != null)
+            {
+                await UpdateCustomer(customerId, request.CustomerRequest!);
+            }
+
             var order = request.GetOrder();
 
             var id = await _orderService.PlaceOrderAsync(order, customerId);
             return Ok(new { OrderId = id });
+        }
+
+        [HttpGet("customer-data")]
+        public async Task<IActionResult> GetCustomerData()
+        {
+            var customer = await _customerService.GetByIdAsync(UserCustomerId);
+            return customer == null
+                ? BadRequest(new { Message = "Customer was not found" })
+                : Ok(customer);            
         }
 
         [HttpGet()]
@@ -78,6 +98,15 @@ namespace WarehouseWebsite.Web.Controllers
         {
             await jobStarter.StartAsync("ItemShippingJob");
             return Ok();
+        }
+
+        private async Task UpdateCustomer(Guid customerId, CustomerRequest request)
+        {
+            var customer = (await _customerService.GetByIdAsync(customerId))!;
+            customer.Name = request.Name;
+            customer.Surname = request.Surname;
+            customer.Address = request.Address;
+            customer.Email = request.Email;
         }
     }
 }

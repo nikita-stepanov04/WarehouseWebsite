@@ -1,0 +1,43 @@
+<app-main-template>
+  <div class="row justify-content-center mt-2">
+    <div class="col-6 main-block shadow">
+      <form class="form" [formGroup]="purchaseForm" (ngSubmit)="onSubmit()">
+        <h2 class="text-center mb-3">Purchase</h2>
+        <div class="mb-3">
+          <app-email-input
+            label="Email"
+            controlName="email"
+            [parentForm]="purchaseForm">
+          </app-email-input>
+        </div>
+        <div class="mb-3">
+          <app-name-input
+            label="Fist name"
+            controlName="name"
+            [parentForm]="purchaseForm">
+          </app-name-input>
+        </div>
+        <div class="mb-3">
+          <app-surname-input
+            label="Second name"
+            controlName="surname"
+            [parentForm]="purchaseForm">
+          </app-surname-input>
+        </div>
+        <div class="mb-3">
+          <app-address-input
+            label="Address"
+            controlName="address"
+            [parentForm]="purchaseForm">
+          </app-address-input>
+        </div>
+        <div class="d-grid mt-4 mb-2">
+          <button class="btn btn-primary" [disabled]="purchaseForm.invalid">Purchase</button>
+          <a
+            class="link-secondary mt-2 text-center"
+            routerLink="/cart">Back to cart</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</app-main-template>

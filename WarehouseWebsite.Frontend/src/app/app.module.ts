@@ -25,6 +25,9 @@ import { CartComponent } from './shopping/cart/cart.component';
 import { CartItemComponent } from './shopping/cart-item/cart-item.component';
 import { ModalComponent } from './common/modal/modal.component';
 import { ItemDetailedComponent } from './shopping/item-detailed/item-detailed.component';
+import { PurchaseComponent } from './shopping/purchase/purchase.component';
+import { AddressInputComponent } from './common/inputs/address-input/address-input.component';
+import { OrderComponent } from './shopping/order/order.component';
 
 @NgModule({
   declarations: [
@@ -47,7 +50,10 @@ import { ItemDetailedComponent } from './shopping/item-detailed/item-detailed.co
     CartComponent,
     CartItemComponent,
     ModalComponent,
-    ItemDetailedComponent
+    ItemDetailedComponent,
+    PurchaseComponent,
+    AddressInputComponent,
+    OrderComponent
   ],
   imports: [
     BrowserModule,

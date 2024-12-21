@@ -7,7 +7,8 @@ import {CartService} from '../cart.service';
   templateUrl: './item.component.html'
 })
 export class ItemComponent {
-  @Input() item!: Item;
+  @Input() item: Item | null = null;
+  @Input() isCartItem: boolean = false;
 
   constructor(
     public cartService: CartService) {}

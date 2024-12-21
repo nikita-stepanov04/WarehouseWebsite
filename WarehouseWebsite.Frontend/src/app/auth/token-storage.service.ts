@@ -67,7 +67,7 @@ export class TokenStorageService {
 
   public isInRole(role: string): boolean {
     const roles = TOKEN_STORE.getItem(USER_ROLE_KEY);
-    if (roles === null) return false;
+    if (!roles) return false;
     const rolesArray = JSON.parse(roles) as string[];
     return rolesArray.includes(role);
   }

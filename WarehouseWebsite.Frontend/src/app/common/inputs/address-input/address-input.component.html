@@ -1,0 +1,16 @@
+<div [formGroup]="parentForm">
+  <label class="form-label">{{label}}</label>
+  <input
+    type="text"
+    class="form-control"
+    placeholder="Enter your address"
+    formControlName="{{controlName}}"
+    [class.is-invalid]="fh.isInvalid(control)"
+  >
+  <div class="invalid-feedback">
+    <span *ngIf="fh.hasError(control, 'required')">Address is required</span>
+    <span *ngIf="fh.hasError(control, 'minlength')">Address minimum length is 5 signs</span>
+    <span *ngIf="fh.hasError(control, 'maxlength')">Address maximum length is 100 signs</span>
+  </div>
+</div>
+

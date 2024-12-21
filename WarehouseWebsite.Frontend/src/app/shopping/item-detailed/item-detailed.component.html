@@ -20,10 +20,12 @@
               <div class="d-flex align-items-center mt-3">
                 <div class="d-flex align-items-center me-3">
                   <input id="quantityInput" type="number"
-                         class="form-control text-center"
-                         #quantityInput
-                         value="1" min="1" max="999"
-                         style="width: 5rem;">
+                   class="form-control text-center"
+                   #quantityInput
+                   value="1" min="1" max="999"
+                   style="width: 5rem;"
+                   autocomplete="off"
+                  >
                 </div>
                 <a class="link-dark text-decoration-none" (click)="cartService.addItemFromInput(item, quantityInput)">
                   <i class="fa-solid fa-basket-shopping fa-2xl"></i>

@@ -6,15 +6,12 @@ import {AuthGuardService} from './auth/auth-guard.service';
 import {RegistrationComponent} from './registration/registration.component';
 import {CartComponent} from './shopping/cart/cart.component';
 import {ItemDetailedComponent} from './shopping/item-detailed/item-detailed.component';
+import {PurchaseComponent} from './shopping/purchase/purchase.component';
 
 const routes: Routes = [
   {
     path: 'home',
     component: HomeComponent,
-    // canActivate: [AuthGuardService],
-    // data: {
-    //   expectedRole: 'User'
-    // }
   },
   {
     path: 'login',
@@ -33,10 +30,14 @@ const routes: Routes = [
     component: ItemDetailedComponent
   },
   {
-    path: '',
-    redirectTo: 'home',
-    pathMatch: "full"
-  }
+    path: 'purchase',
+    component: PurchaseComponent,
+    canActivate: [AuthGuardService],
+    data: {
+      expectedRole: 'User'
+    }
+  },
+  { path: '', redirectTo: '/home', pathMatch: "full" },
 ];
 
 @NgModule({

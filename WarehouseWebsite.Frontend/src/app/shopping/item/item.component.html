@@ -1,5 +1,5 @@
 <div class="card mb-3 shadow-sm border-0">
-  <div class="row g-0 align-items-center">
+  <div class="row g-0 align-items-center" *ngIf="item">
     <div class="col-auto">
       <img [src]="item.photoUrl" class="img-fluid rounded-start warehouse-image ms-1" alt="Item Image">
     </div>
@@ -16,20 +16,29 @@
 
           <div class="d-flex flex-column text-end justify-content-center ms-auto me-3">
             <p class="card-text m-0"><strong>{{item.weight}}kg</strong></p>
-            <p class="card-text m-0"><strong>{{item.quantity}}</strong> available</p>
+            <p class="card-text m-0" *ngIf="!isCartItem; else cartItem">
+              <strong>{{item.quantity}}</strong> available
+            </p>
+            <ng-template #cartItem>
+              <p class="card-text m-0">
+                <strong>{{item.quantity}}</strong> pieces
+              </p>
+            </ng-template>
           </div>
         </a>
 
-        <div class="d-flex flex-column justify-content-center">
+        <div class="d-flex flex-column justify-content-center" *ngIf="!isCartItem">
           <a class="text-decoration-none link-secondary text-center"
              (click)="cartService.addItemFromInput(item, quantityInput)">
             <i class="fa-solid fa-basket-shopping fa-2xl"></i>
           </a>
           <div class="mt-2">
             <input class="form-control px-1 text-center" type="number"
-                   #quantityInput
-                   value="1" min="1" max="999"
-                   style="max-width: 4vw; max-height: 3vh">
+             #quantityInput
+             value="1" min="1" max="999"
+             style="max-width: 4vw; max-height: 3vh"
+             autocomplete="off"
+            >
           </div>
         </div>
       </div>

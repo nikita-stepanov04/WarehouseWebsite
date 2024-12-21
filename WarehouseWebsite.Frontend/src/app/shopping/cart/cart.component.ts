@@ -4,8 +4,9 @@ import { Pagination } from '../../common/pagination/pagination';
 import { CartService } from '../cart.service';
 import {ErrorService} from '../../error/error.service';
 import {ModalService} from '../../common/modal/modal.service';
-import {HttpClient} from '@angular/common/http';
-
+import {TokenStorageService} from '../../auth/token-storage.service';
+import {Router} from '@angular/router';
+import {Order} from '../order/order';
 @Component({
   selector: 'app-cart',
   templateUrl: './cart.component.html',
@@ -16,11 +17,14 @@ export class CartComponent implements OnInit {
   public items: Item[] = [];
   public pagination = new Pagination(1, 3, 1);
 
+  public orders: Order[] = [];
+
   constructor(
-    private cartService: CartService,
+    public cartService: CartService,
     private errorService: ErrorService,
     private modalService: ModalService,
-    private http: HttpClient) {}
+    private tokenService: TokenStorageService,
+    private router: Router) {}
 
   ngOnInit(): void {
     this.loadItems();
@@ -64,17 +68,20 @@ export class CartComponent implements OnInit {
       });
   }
 
-  public purchase() {
-    this.modalService.openModal('Complete purchase and place order?')
-      .subscribe(result => {
-        if (result) {
-          // TODO post order
-        }
-      })
-  }
-
   public totalPrice() {
     return this.allItems.reduce((accumulator, item) =>
         accumulator + item.quantity * item.price, 0);
   }
+
+  public purchase() {
+    if (this.cartService.cart.length == 0) {
+      this.errorService.handleSuccess('Nothing to purchase');
+    }
+    else if (this.tokenService.isAuthorized()) {
+      this.router.navigate(['/purchase']);
+    } else {
+      this.errorService.handleSuccess('Please log in to purchase');
+    }
+  }
+
 }
