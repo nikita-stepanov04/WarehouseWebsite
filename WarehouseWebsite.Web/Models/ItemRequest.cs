@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using WarehouseWebsite.Domain.Models.Items;
 
 namespace WarehouseWebsite.Web.Models

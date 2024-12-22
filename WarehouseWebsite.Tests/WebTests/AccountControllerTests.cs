@@ -175,13 +175,13 @@ namespace WarehouseWebsite.Tests.WebTests
         }
 
         [Test]
-        public async Task AccountControllerRefreshReturnUnauthorizedWhenInvalidAccessToken()
+        public async Task AccountControllerRefreshReturnBadRequestWhenInvalidRefreshToken()
         {
             var accessToken = _jwtTokenService.GenerateAccessToken(_claims);
             var request = new TokenRequest { AccessToken = accessToken, RefreshToken = "refresh-token" };
 
             var result = await _controller.Refresh(request);
-            Assert.That(result, Is.TypeOf<UnauthorizedObjectResult>());
+            Assert.That(result, Is.TypeOf<BadRequestObjectResult>());
         }
 
         [Test]

@@ -1,0 +1,17 @@
+<div [formGroup]="parentForm">
+  <label class="form-label">{{label}}</label>
+  <input
+    type="text"
+    class="form-control"
+    placeholder="Enter the item name"
+    formControlName="{{controlName}}"
+    [class.is-invalid]="fh.isInvalid(control)"
+  >
+  <div class="invalid-feedback">
+    <span *ngIf="fh.hasError(control, 'required')">Name is required</span>
+    <span *ngIf="fh.hasError(control, 'minlength')">Name minimum length is 1 signs</span>
+    <span *ngIf="fh.hasError(control, 'maxlength')">Name maximum length is 50 signs</span>
+  </div>
+</div>
+
+

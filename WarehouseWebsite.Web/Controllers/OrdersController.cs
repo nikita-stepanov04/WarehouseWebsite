@@ -65,6 +65,7 @@ namespace WarehouseWebsite.Web.Controllers
                 filterParams.Filter = !isAdmin
                     ? o => o.CustomerId == UserCustomerId
                     : default;
+                filterParams.OrderBy = o => o.OrderTime;
                 orders = await _orderService.GetAwaitingOrdersAsync(filterParams, token);
             }
             else if (status == OrderStatus.Transited || status == OrderStatus.Transiting)
@@ -73,6 +74,7 @@ namespace WarehouseWebsite.Web.Controllers
                 filterParams.Filter = !isAdmin
                     ? o => o.CustomerId == UserCustomerId
                     : default;
+                filterParams.OrderByDescending = o => o.OrderTime;
                 orders = status switch
                 {
                     OrderStatus.Transited => await _orderService.GetTransitedOrdersAsync(filterParams, token),
@@ -91,8 +93,8 @@ namespace WarehouseWebsite.Web.Controllers
             return Ok();
         }
 
-        [HttpGet("start-shipping")]
-        [Authorize(Policy = nameof(Policies.AdminsOnly))]
+        [HttpPost("start-shipping")]
+        [Authorize(Policy = nameof(Policies.AdminsOnly))]  
         public async Task<IActionResult> StartShipping(
             [FromServices] JobStartingHelper jobStarter)
         {

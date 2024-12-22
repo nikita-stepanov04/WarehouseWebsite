@@ -1,0 +1,14 @@
+<div [formGroup]="parentForm">
+  <label class="form-label">{{label}}</label>
+  <select class="form-select"
+      [formControlName]="controlName"
+      [class.is-invalid]="fh.isInvalid(control)">
+    <option
+      *ngFor="let key of itemKeys"
+      [value]="key">{{ItemCategory[key]}}
+    </option>
+  </select>
+  <div class="invalid-feedback">
+    <span *ngIf="fh.hasError(control, 'required')">Category is required</span>
+  </div>
+</div>

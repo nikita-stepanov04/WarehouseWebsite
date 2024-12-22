@@ -15,6 +15,7 @@ import {ModalService} from '../../common/modal/modal.service';
 export class ItemComponent {
   @Input() item: Item | null = null;
   @Input() isCartItem: boolean = false;
+  @Input() isMissing: boolean = false;
   currentUrl: string = '';
 
   constructor(

@@ -72,7 +72,6 @@ export class PurchaseComponent implements OnInit{
           if (!this.compareCustomers(this.customer!, formCustomer)) {
             order.customer = formCustomer;
           }
-          console.log('posting')
           this.http.post<Purchase>(`${environment.apiBasePath}/orders/place`, order)
             .subscribe({
               next: () => {

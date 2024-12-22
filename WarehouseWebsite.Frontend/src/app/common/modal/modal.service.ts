@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import {Subject} from 'rxjs';
+import { Subject } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,7 @@ export class ModalService {
 
   openModal(message: string) {
     this.modal$.next(message);
-    return this.modalResult$;
+    return this.modalResult$.pipe(take(1));
   }
 
   accept() {

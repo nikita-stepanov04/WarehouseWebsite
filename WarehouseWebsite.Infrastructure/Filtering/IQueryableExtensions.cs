@@ -1,4 +1,5 @@
-﻿using WarehouseWebsite.Domain.Filtering;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using WarehouseWebsite.Domain.Filtering;
 using WarehouseWebsite.Domain.Models;
 
 namespace WarehouseWebsite.Infrastructure.Filtering
@@ -9,7 +10,18 @@ namespace WarehouseWebsite.Infrastructure.Filtering
             this IQueryable<T> query, FilterParameters<T> parameters)
             where T : BaseEntity
         {
-            query = query.OrderBy(i => i.Id);
+            if (parameters.OrderBy != null)
+            {
+                query = query.OrderBy(parameters.OrderBy);
+            }
+            else if (parameters.OrderByDescending != null)
+            {
+                query = query.OrderByDescending(parameters.OrderByDescending);
+            }
+            else
+            {
+                query = query.OrderBy(i => i.Id);
+            }
             if (parameters.Filter != null)
             {
                 query = query.Where(parameters.Filter);

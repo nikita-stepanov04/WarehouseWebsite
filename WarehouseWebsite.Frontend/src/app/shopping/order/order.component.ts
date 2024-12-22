@@ -11,7 +11,7 @@ import {Item} from '../item';
   selector: 'app-order',
   templateUrl: './order.component.html'
 })
-export class OrderComponent {
+export class OrderComponent{
   @Input() status: string = 'Transiting';
 
   public orders: Order[] = [];
@@ -20,8 +20,8 @@ export class OrderComponent {
   public nextDisabled: boolean = false;
 
   constructor(
-    private http: HttpClient,
-    private errorService: ErrorService,
+    public http: HttpClient,
+    public errorService: ErrorService,
     public itemService: ItemsCacheService) {}
 
   toggle() {

@@ -16,18 +16,18 @@
 
           <div class="d-flex flex-column text-end justify-content-center ms-auto me-3">
             <p class="card-text m-0"><strong>{{item.weight}}kg</strong></p>
-            <p class="card-text m-0" *ngIf="!isCartItem; else cartItem">
+            <p class="card-text m-0" *ngIf="!isCartItem && !isMissing; else cartItem">
               <strong>{{item.quantity}}</strong> available
             </p>
             <ng-template #cartItem>
               <p class="card-text m-0">
-                <strong>{{item.quantity}}</strong> pieces
+                <strong [ngClass]="{'text-danger': isMissing}">{{item.quantity}}</strong> pieces
               </p>
             </ng-template>
           </div>
         </a>
 
-        <div class="d-flex flex-column justify-content-center" *ngIf="!isCartItem">
+        <div class="d-flex flex-column justify-content-center" *ngIf="!isCartItem && !isMissing">
           <a class="text-decoration-none link-secondary text-center"
              (click)="cartService.addItemFromInput(item, quantityInput)">
             <i class="fa-solid fa-basket-shopping fa-2xl"></i>
@@ -43,7 +43,7 @@
         </div>
 
         <div class="d-flex flex-column justify-content-center ms-3"
-           *ngIf="!isCartItem && tokenService.isInRole('Admin')">
+           *ngIf="!isCartItem && !isMissing && tokenService.isInRole('Admin')">
           <a class="link-danger text-decoration-none" (click)="removeItem(item.id)">
             <i class="fa-solid fa-trash-can fa-xl"></i>
           </a>

@@ -58,7 +58,12 @@ namespace WarehouseWebsite.Application.Services
         public async Task<IEnumerable<MissingItem>> GetMissingItemsAsync(
             FilterParameters<MissingItem> filter, CancellationToken token)
         {
-            return await _missingItemRepository.GetItemsByFilterAsync(filter, token);
+            var missingItems = await _missingItemRepository.GetItemsByFilterAsync(filter, token);
+            foreach(var missing in missingItems)
+            {
+                missing.Item.PhotoUrl = _imageRepository.GetImageUri(missing.Item.PhotoBlobId);
+            }
+            return missingItems;
         }
 
         public async Task RemoveItemByIdAsync(Guid id)

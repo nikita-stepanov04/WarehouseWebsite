@@ -28,6 +28,18 @@ import { ItemDetailedComponent } from './shopping/item-detailed/item-detailed.co
 import { PurchaseComponent } from './shopping/purchase/purchase.component';
 import { AddressInputComponent } from './common/inputs/address-input/address-input.component';
 import { OrderComponent } from './shopping/order/order.component';
+import { AdminOrdersComponent } from './admin/orders/admin-orders.component';
+import { MissingComponent } from './admin/missing/missing.component';
+import { AdminAddItemComponent } from './admin/add-item/admin-add-item.component';
+import { ItemNameComponent } from './common/inputs/item-name/item-name.component';
+import { ItemQuantityComponent } from './common/inputs/item-quantity/item-quantity.component';
+import { ItemDescriptionComponent } from './common/inputs/item-description/item-description.component';
+import { ItemPriceComponent } from './common/inputs/item-price/item-price.component';
+import { ItemWeightComponent } from './common/inputs/item-weight/item-weight.component';
+import { ItemCategoryComponent } from './common/inputs/item-category/item-category.component';
+import { ItemImageComponent } from './common/inputs/item-image/item-image.component';
+import { RestockItemComponent } from './admin/restock-item/restock-item.component';
+import { IdComponent } from './common/inputs/id/id.component';
 
 @NgModule({
   declarations: [
@@ -53,14 +65,26 @@ import { OrderComponent } from './shopping/order/order.component';
     ItemDetailedComponent,
     PurchaseComponent,
     AddressInputComponent,
-    OrderComponent
+    OrderComponent,
+    AdminOrdersComponent,
+    MissingComponent,
+    AdminAddItemComponent,
+    ItemNameComponent,
+    ItemQuantityComponent,
+    ItemDescriptionComponent,
+    ItemPriceComponent,
+    ItemWeightComponent,
+    ItemCategoryComponent,
+    ItemImageComponent,
+    RestockItemComponent,
+    IdComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
   ],
   providers: [
     httpInterceptorProviders,

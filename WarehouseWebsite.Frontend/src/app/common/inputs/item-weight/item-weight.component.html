@@ -1,0 +1,21 @@
+<div [formGroup]="parentForm">
+  <label class="form-label">{{label}}</label>
+  <div class="input-group">
+    <input
+      type="text"
+      class="form-control"
+      placeholder="Enter weight"
+      formControlName="{{controlName}}"
+      [class.is-invalid]="fh.isInvalid(control)"
+    >
+    <span class="input-group-text">kg</span>
+    <div class="invalid-feedback">
+      <span *ngIf="fh.hasError(control, 'required')">Weight is required</span>
+      <span *ngIf="fh.hasError(control, 'invalidFraction')">Weight must be a number</span>
+      <span *ngIf="fh.hasError(control, 'min')">Minimum weight is 0.1kg</span>
+      <span *ngIf="fh.hasError(control, 'max')">Maximum weight is 1000kg</span>
+    </div>
+  </div>
+</div>
+
+

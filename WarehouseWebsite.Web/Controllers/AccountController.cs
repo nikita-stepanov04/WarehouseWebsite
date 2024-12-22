@@ -122,7 +122,7 @@ namespace WarehouseWebsite.Web.Controllers
 
             var storedToken = await _jwtTokenService.GetStoredRefreshTokenAsync(request.RefreshToken);
 
-            if (storedToken == null || !storedToken.IsActive) return Unauthorized(new { Message = "Refresh token is invalid or expired" });
+            if (storedToken == null || !storedToken.IsActive) return BadRequest(new { Message = "Refresh token is invalid or expired" });
 
             var newAccessToken = _jwtTokenService.GenerateAccessToken(principal.Claims);
             var newRefreshToken = _jwtTokenService.GenerateRefreshToken();

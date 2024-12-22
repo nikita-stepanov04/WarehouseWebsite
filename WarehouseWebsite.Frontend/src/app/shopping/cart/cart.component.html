@@ -32,16 +32,22 @@
     </div>
 
     <div class="col-8 main-block mt-4">
-      <div *ngIf="!tokenService.isInRole('Admin'); else adminMessage">
-        <app-order [status]="'Transiting'"></app-order>
-        <div class="mt-2"></div>
-        <app-order [status]="'Transited'"></app-order>
-        <div class="mt-2"></div>
-        <app-order [status]="'Awaiting'"></app-order>
+      <div *ngIf="!tokenService.isAuthorized(); else authMessage">
+        <h6 class="text-center">Log in to see orders history</h6>
       </div>
+      <ng-template #authMessage>
+        <div *ngIf="!tokenService.isInRole('Admin'); else adminMessage">
+          <app-order [status]="'Transiting'"></app-order>
+          <div class="mt-2"></div>
+          <app-order [status]="'Transited'"></app-order>
+          <div class="mt-2"></div>
+          <app-order [status]="'Awaiting'"></app-order>
+        </div>
+      </ng-template>
       <ng-template #adminMessage>
         <h6 class="text-center">Log in as user to see orders history</h6>
       </ng-template>
     </div>
+
   </div>
 </app-main-template>

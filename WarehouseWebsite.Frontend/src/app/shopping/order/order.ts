@@ -1,10 +1,14 @@
 export class Order {
+  id: string;
+  customerId: string;
   orderTime: string;
   status: string;
   totalPrice: number;
   orderItems: OrderItem[];
 
-  constructor(orderTime: string, status: string, totalPrice: number, orderItems: OrderItem[]) {
+  constructor(id: string, customerId: string, orderTime: string, status: string, totalPrice: number, orderItems: OrderItem[]) {
+    this.id = id;
+    this.customerId = customerId;
     this.orderTime = orderTime;
     this.status = status;
     this.totalPrice = totalPrice;

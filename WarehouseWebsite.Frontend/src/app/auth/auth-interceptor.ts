@@ -1,62 +1,56 @@
-import {
-  HTTP_INTERCEPTORS,
-  HttpErrorResponse,
-  HttpEvent,
-  HttpHandler,
-  HttpInterceptor,
-  HttpRequest
-} from '@angular/common/http';
-import { TokenStorageService } from './token-storage.service';
 import { Injectable } from '@angular/core';
-import { catchError, Observable, switchMap, throwError } from 'rxjs';
+import {
+  HttpEvent,
+  HttpInterceptor,
+  HttpHandler,
+  HttpRequest,
+  HttpErrorResponse,
+  HTTP_INTERCEPTORS
+} from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
+import { TokenStorageService } from './token-storage.service';
 import { AuthService } from './auth.service';
-import { TokenInfo } from './token-info';
 import { Router } from '@angular/router';
-
-const TOKEN_HEADER_KEY = 'Authorization';
+import {log} from '@angular-devkit/build-angular/src/builders/ssr-dev-server';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  private isRefreshing = false;
-
-  constructor(
-    private token: TokenStorageService,
-    private authService: AuthService,
-    private router: Router) { }
+  constructor(private tokenService: TokenStorageService, private authService: AuthService, private router: Router) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    let authReq = req;
-    if (this.token.isAuthorized()) {
-      authReq = req.clone({ headers: req.headers.set(TOKEN_HEADER_KEY, `Bearer ${this.token.getAccessToken()}`) });
-    }
+    const authToken = this.tokenService.getAccessToken();
+    const authReq = req.clone({
+      setHeaders: { Authorization: `Bearer ${authToken}` }
+    });
 
     return next.handle(authReq).pipe(
       catchError((error: HttpErrorResponse) => {
-        if (error.status === 401 && !this.isRefreshing) {
-          this.isRefreshing = true;
-          let tokenInfo = new TokenInfo(
-            this.token.getAccessToken(),
-            this.token.getRefreshToken()
-          );
-          if (tokenInfo.accessToken && tokenInfo.refreshToken) {
-            return this.authService.refresh(tokenInfo).pipe(
-              switchMap((newTokenInfo: TokenInfo) => {
-                this.isRefreshing = false;
-                const newAuthRequest = req.clone({ headers: req.headers.set(TOKEN_HEADER_KEY, `Bearer ${newTokenInfo.accessToken}`) });
-                return next.handle(newAuthRequest);
-              }),
-              catchError(err => {
-                this.isRefreshing = false;
-                this.token.clearTokens();
+        if (error.status === 401) {
+          return this.authService.refresh({
+            accessToken: this.tokenService.getAccessToken(),
+            refreshToken: this.tokenService.getRefreshToken()
+          }).pipe(
+            switchMap((tokenInfo: any) => {
+              const newToken = tokenInfo.accessToken;
+              this.tokenService.saveAccessToken(newToken);
+              this.tokenService.saveRefreshToken(tokenInfo.refreshToken);
+
+              const newAuthReq = req.clone({
+                setHeaders: { Authorization: `Bearer ${newToken}` }
+              });
+
+              return next.handle(newAuthReq);
+            }),
+            catchError((refreshError: HttpErrorResponse) => {
+              if (refreshError.status === 400) {
                 this.router.navigate(['/login']);
-                throw new Error(err);
-              })
-            );
-          } else {
-            throw error;
-          }
+                throw new Error();
+              }
+              throw refreshError;
+            })
+          );
         } else {
-          this.router.navigate(['/login']);
           throw error;
         }
       })
