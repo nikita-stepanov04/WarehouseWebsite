@@ -1,0 +1,23 @@
+<div [formGroup]="parentForm">
+  <label class="form-label">{{label}}</label>
+  <div class="input-group">
+    <span class="input-group-text">$</span>
+    <input
+      type="text"
+      class="form-control"
+      placeholder="Enter the item name"
+      formControlName="{{controlName}}"
+      [class.is-invalid]="fh.isInvalid(control)"
+    >
+    <div class="invalid-feedback">
+      <span *ngIf="fh.hasError(control, 'required')">Price is required</span>
+      <span *ngIf="fh.hasError(control, 'invalidFraction')">Price must be a number</span>
+      <span *ngIf="fh.hasError(control, 'min')">Minimum price is $0.01</span>
+      <span *ngIf="fh.hasError(control, 'max')">Maximum price is $10_000_000</span>
+    </div>
+  </div>
+
+</div>
+
+
+

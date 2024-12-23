@@ -1,0 +1,35 @@
+<div class="d-grid">
+  <button class="btn btn-secondary" (click)="toggle()">
+    <span class="pe-3">Load {{status}} orders</span>
+    <i *ngIf="collapsed; else notCollapsed" class="fa-solid fa-chevron-down"></i>
+    <ng-template #notCollapsed>
+      <i class="fa-solid fa-chevron-up"></i>
+    </ng-template>
+  </button>
+</div>
+<div *ngIf="!collapsed">
+  <div class="main-block mt-2" *ngFor="let order of orders">
+    <div class="d-flex justify-content-between mb-2">
+      <div>
+        Order date: <strong>{{order.orderTime | date:'yyyy-MM-dd HH:mm' : '+0300'}}</strong>
+      </div>
+      <div class="me-3">
+        Total price: <strong>{{order.totalPrice | currency}}</strong>
+      </div>
+    </div>
+    <app-item
+      *ngFor="let orderItem of order.orderItems"
+      [item]="getItem(orderItem.itemId, orderItem.quantity, orderItem.price)"
+      [isCartItem]="true">
+    </app-item>
+  </div>
+  <div class="mt-3">
+    <app-pagination
+      [pagination]="pagination"
+      [nextDisabled]="nextDisabled"
+      (previous)="previous()"
+      (next)="next()">
+    </app-pagination>
+  </div>
+</div>
+

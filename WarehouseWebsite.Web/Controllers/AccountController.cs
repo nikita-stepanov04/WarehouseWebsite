@@ -36,7 +36,7 @@ namespace WarehouseWebsite.Web.Controllers
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
 
-            if (user == null) return Unauthorized(new { Message = "Invalid username" });
+            if (user == null) return Unauthorized(new { Message = "Invalid email" });
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
 
@@ -64,14 +64,15 @@ namespace WarehouseWebsite.Web.Controllers
                 }                
                 token.Token = refreshToken;
                 token.Created = DateTime.UtcNow;
-                token.Expires = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationDays);                
+                token.Expires = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationDays);
+                token.IsRevoked = false;
 
                 user.RefreshToken = token;
                 var updateResult = await _userManager.UpdateAsync(user);
 
                 if (!updateResult.Succeeded) return BadRequest();
 
-                return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken });
+                return Ok(new { AccessToken = accessToken, RefreshToken = refreshToken, Roles = roles });
             }
             return Unauthorized(new { Message = "Invalid password" });
         }
@@ -79,6 +80,9 @@ namespace WarehouseWebsite.Web.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
+            var findResult = await _userManager.FindByEmailAsync(request.Email);
+            if (findResult != null) return BadRequest(new { Message = "User with specified email has already been registered" });
+
             var user = new AppUser
             {
                 Email = request.Email,
@@ -118,7 +122,7 @@ namespace WarehouseWebsite.Web.Controllers
 
             var storedToken = await _jwtTokenService.GetStoredRefreshTokenAsync(request.RefreshToken);
 
-            if (storedToken == null || !storedToken.IsActive) return Unauthorized(new { Message = "Refresh token is invalid or expired" });
+            if (storedToken == null || !storedToken.IsActive) return BadRequest(new { Message = "Refresh token is invalid or expired" });
 
             var newAccessToken = _jwtTokenService.GenerateAccessToken(principal.Claims);
             var newRefreshToken = _jwtTokenService.GenerateRefreshToken();

@@ -16,8 +16,8 @@ namespace WarehouseWebsite.Infrastructure.Data
             FilterParameters<Item> filter, CancellationToken token)
         {
             List<Item> items = await DbContext.Items
-                .WithFilter(filter)
                 .Where(i => !i.IsRemoved)
+                .WithFilter(filter)
                 .SelectWithoutDescription()
                 .ToListAsync(cancellationToken: token);
             return items;

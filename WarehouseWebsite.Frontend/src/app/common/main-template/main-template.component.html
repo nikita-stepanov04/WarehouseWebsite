@@ -1,0 +1,68 @@
+<header>
+  <nav class="navbar fixed-top bg-body-tertiary">
+    <div class="container-xxl container-fluid">
+      <a class="navbar-brand" routerLink="/">
+        <span class="fw-semibold ms-2">Warehouse</span>
+      </a>
+      <div *ngIf="tokenService.isInRole('Admin')" class="fw-semibold">
+        <a class="navbar-brand link-secondary" [routerLink]="['/admin-orders', 'Transiting']">
+          <i class="fa-solid fa-truck"></i>
+          <span class="ms-2">Transiting</span>
+        </a>
+        <a class="navbar-brand link-secondary ms-2" [routerLink]="['/admin-orders', 'Transited']">
+          <i class="fa-solid fa-truck-ramp-box"></i>
+          <span class="ms-2">Transited</span>
+        </a>
+        <a class="navbar-brand link-secondary ms-2" [routerLink]="['/admin-orders', 'Awaiting']">
+          <i class="fa-regular fa-hourglass-half"></i>
+          <span class="ms-2">Awaiting</span>
+        </a>
+        <a class="navbar-brand link-secondary ms-2" routerLink="/admin-missing">
+          <i class="fas fa-exclamation-circle"></i>
+          <span class="ms-2">Missing</span>
+        </a>
+        <a class="navbar-brand link-secondary ms-2" routerLink="/admin-add">
+          <i class="fa-solid fa-circle-plus"></i>
+          <span class="ms-2">Add item</span>
+        </a>
+        <a class="navbar-brand link-secondary ms-2" routerLink="/admin-restock">
+          <i class="fa-solid fa-boxes-stacked"></i>
+          <span class="ms-2">Restock</span>
+        </a>
+      </div>
+      <div class="d-flex align-items-center">
+        <div *ngIf="tokenService.isAuthorized(); else unauthorized">
+          <a class="position-relative me-3 d-flex align-items-center text-decoration-none link-secondary"
+             (click)="tokenService.logout()">
+            <i class="fa-solid fa-user-slash fa-xl"></i>
+          </a>
+        </div>
+        <ng-template #unauthorized>
+          <a class="position-relative me-3 d-flex align-items-center text-decoration-none link-secondary"
+             routerLink="/login">
+            <i class="fa-solid fa-user fa-xl"></i>
+          </a>
+        </ng-template>
+        <a class="position-relative d-flex me-3 align-items-center text-decoration-none link-secondary">
+          <div class="position-relative align-items-start">
+            <i class="fa-solid fa-cart-shopping fa-xl" routerLink="/cart"></i>
+            <span class="position-absolute translate-middle badge rounded-pill bg-danger"
+                style="left: 110%;">
+              {{cartService.cartQuantityShorten()}}
+            </span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </nav>
+</header>
+<main class="my-5">
+  <div class="container-xxl container-fluid py-lg-3 py-xxl-5">
+    <div class="row">
+      <ng-content></ng-content>
+    </div>
+  </div>
+</main>
+<app-footer></app-footer>
+
+

@@ -1,0 +1,19 @@
+<div [formGroup]="parentForm">
+  <label class="form-label">{{label}}</label>
+  <textarea
+    type="text"
+    class="form-control"
+    rows="5"
+    placeholder="Enter description"
+    formControlName="{{controlName}}"
+    [class.is-invalid]="fh.isInvalid(control)"
+  >
+  </textarea>
+  <div class="invalid-feedback">
+    <span *ngIf="fh.hasError(control, 'required')">Description is required</span>
+    <span *ngIf="fh.hasError(control, 'minlength')">Description minimum length is 10 signs</span>
+    <span *ngIf="fh.hasError(control, 'maxlength')">Description maximum length is 500 signs</span>
+  </div>
+</div>
+
+

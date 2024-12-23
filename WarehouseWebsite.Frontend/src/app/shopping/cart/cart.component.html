@@ -1,0 +1,53 @@
+<app-main-template>
+  <div class="row justify-content-center">
+    <div class="col-8 main-block">
+      <div *ngIf="cartService.cart.length != 0; else emptyCart">
+        <div class="row">
+          <div class="col-4 offset-4">
+            <h4 class="text-center">My cart</h4>
+          </div>
+          <div class="col-4 text-end pe-4 fs-5">
+            Total: <strong>{{totalPrice() | currency}}</strong>
+            <a class="link-dark text-decoration-none ps-3" (click)="purchase()">
+              <i class="fa-solid fa-cart-arrow-down fa-lg"></i>
+            </a>
+          </div>
+        </div>
+        <app-cart-item
+          *ngFor="let item of items"
+          [item]="item"
+          (remove)="removeItemFromCart($event)">
+        </app-cart-item>
+        <app-pagination
+          [pagination]="pagination"
+          [nextDisabled]="pagination.totalPages <= pagination.page"
+          (previous)="previous()"
+          (next)="next()">
+        </app-pagination>
+      </div>
+
+      <ng-template #emptyCart>
+        <h4 class="text-center">Cart is empty</h4>
+      </ng-template>
+    </div>
+
+    <div class="col-8 main-block mt-4">
+      <div *ngIf="!tokenService.isAuthorized(); else authMessage">
+        <h6 class="text-center">Log in to see orders history</h6>
+      </div>
+      <ng-template #authMessage>
+        <div *ngIf="!tokenService.isInRole('Admin'); else adminMessage">
+          <app-order [status]="'Transiting'"></app-order>
+          <div class="mt-2"></div>
+          <app-order [status]="'Transited'"></app-order>
+          <div class="mt-2"></div>
+          <app-order [status]="'Awaiting'"></app-order>
+        </div>
+      </ng-template>
+      <ng-template #adminMessage>
+        <h6 class="text-center">Log in as user to see orders history</h6>
+      </ng-template>
+    </div>
+
+  </div>
+</app-main-template>

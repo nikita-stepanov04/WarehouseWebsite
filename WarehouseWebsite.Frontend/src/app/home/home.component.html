@@ -1,0 +1,14 @@
+<app-main-template>
+  <div class="row justify-content-center">
+    <div class="col-8 main-block">
+      <h4 class="text-center">Warehouse</h4>
+      <app-item *ngFor="let item of items" [item]="item"></app-item>
+      <app-pagination
+        [pagination]="pagination"
+        [nextDisabled]="nextDisabled"
+        (previous)="previous()"
+        (next)="next()">
+      </app-pagination>
+    </div>
+  </div>
+</app-main-template>

@@ -1,0 +1,14 @@
+<div [formGroup]="parentForm">
+  <label class="form-label">{{label}}</label>
+  <input
+    type="email"
+    class="form-control"
+    placeholder="Enter your email"
+    formControlName="{{controlName}}"
+    [class.is-invalid]="fh.isInvalid(control)"
+  >
+  <div class="invalid-feedback">
+    <span *ngIf="fh.hasError(control, 'required')">Email is required</span>
+    <span *ngIf="fh.hasError(control, 'email')">Email is invalid</span>
+  </div>
+</div>

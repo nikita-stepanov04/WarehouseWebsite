@@ -1,0 +1,25 @@
+<app-auth-template>
+  <form class="form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <h2 class="text-center mb-3">Log in</h2>
+    <div class="mb-3">
+      <app-email-input
+        label="Email"
+        controlName="email"
+        [parentForm]="loginForm">
+      </app-email-input>
+    </div>
+    <div class="mb-3">
+      <app-password-input
+        label="Password"
+        controlName="password"
+        [parentForm]="loginForm">
+      </app-password-input>
+    </div>
+    <div class="d-grid mt-4 mb-2">
+      <button class="btn btn-primary" [disabled]="loginForm.invalid">Login</button>
+      <a
+        class="link-secondary mt-2 text-center"
+        routerLink="/register">Registration</a>
+    </div>
+  </form>
+</app-auth-template>

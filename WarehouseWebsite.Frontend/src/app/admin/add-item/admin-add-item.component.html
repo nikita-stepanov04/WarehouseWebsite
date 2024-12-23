@@ -1,0 +1,81 @@
+<app-main-template>
+  <div class="row justify-content-center mt-5">
+    <div class="col-8 main-block border shadow-lg">
+      <div class="container-fluid">
+
+        <form class="form" [formGroup]="addItemForm" (ngSubmit)="onSubmit()">
+          <div class="row">
+            <h4 class="text-center">Add Item</h4>
+            <div class="col-6">
+
+              <div class="mb-3">
+                <app-item-name
+                  label="Name"
+                  controlName="name"
+                  [parentForm]="addItemForm">
+                </app-item-name>
+              </div>
+
+              <div class="mb-3">
+                <app-item-quantity
+                  label="Quantity"
+                  controlName="quantity"
+                  [parentForm]="addItemForm">
+                </app-item-quantity>
+              </div>
+
+              <div class="mb-3">
+                <app-item-description
+                  label="Description"
+                  controlName="description"
+                  [parentForm]="addItemForm">
+                </app-item-description>
+              </div>
+            </div>
+            <div class="col-6">
+
+              <div class="mb-3">
+                <app-item-price
+                  label="Price"
+                  controlName="price"
+                  [parentForm]="addItemForm">
+                </app-item-price>
+              </div>
+
+              <div class="mb-3">
+                <app-item-weight
+                  label="Weight"
+                  controlName="weight"
+                  [parentForm]="addItemForm">
+                </app-item-weight>
+              </div>
+
+              <div class="mb-3">
+                <app-item-category
+                  label="Category"
+                  controlName="category"
+                  [parentForm]="addItemForm">
+                </app-item-category>
+              </div>
+
+              <div class="mb-3">
+                <app-item-image
+                  label="Image"
+                  controlName="image"
+                  [parentForm]="addItemForm">
+                </app-item-image>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="d-grid mt-4 mb-2">
+            <button class="btn btn-primary" [disabled]="addItemForm.invalid">
+              Add Item
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</app-main-template>

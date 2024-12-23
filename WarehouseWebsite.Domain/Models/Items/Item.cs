@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using WarehouseWebsite.Domain.Models.Orders;
 
 namespace WarehouseWebsite.Domain.Models.Items
 {

@@ -1,0 +1,18 @@
+<div [formGroup]="parentForm">
+  <label class="form-label">{{label}}</label>
+  <input
+    type="file"
+    accept="image/jpeg,image/png,image/bmp"
+    class="form-control"
+    placeholder="Select image"
+    formControlName="{{controlName}}"
+    (change)="onFileChange($event)"
+    [class.is-invalid]="fh.isInvalid(control)"
+  >
+  <div class="invalid-feedback">
+    <span *ngIf="fh.hasError(control, 'required')">Image is required</span>
+  </div>
+</div>
+
+
+

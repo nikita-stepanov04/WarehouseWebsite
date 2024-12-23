@@ -1,0 +1,16 @@
+<div [formGroup]="parentForm">
+  <label class="form-label">{{label}}</label>
+  <input
+    type="text"
+    class="form-control"
+    placeholder="Enter id"
+    formControlName="{{controlName}}"
+    [class.is-invalid]="fh.isInvalid(control)"
+  >
+  <div class="invalid-feedback">
+    <span *ngIf="fh.hasError(control, 'required')">Id is required</span>
+  </div>
+</div>
+
+
+

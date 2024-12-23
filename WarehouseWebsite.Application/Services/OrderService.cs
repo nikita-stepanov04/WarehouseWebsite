@@ -69,7 +69,7 @@ namespace WarehouseWebsite.Application.Services
 
                     awaitingOrder.TotalPrice -= orderItem.Price * orderItem.Quantity;
 
-                    if (!awaitingOrder.OrderItems.Any())
+                    if (awaitingOrder.TotalPrice == 0)
                         _awaitingOrderRepository.Remove(awaitingOrder);
                 }
                 await _unitOfWork.SaveAsync();
@@ -186,7 +186,7 @@ namespace WarehouseWebsite.Application.Services
                         addToMissingList.Add(new MissingItem
                         {
                             ItemId = item.Id,
-                            Missing = orderItem.Quantity - item.Quantity
+                            Missing = orderItem.Quantity
                         });
                     }
 
