@@ -30,4 +30,12 @@ export class RestockItemComponent {
         error: (err) => this.errorService.handle(err)
       });
   }
+
+  startShipping() {
+    this.http.post(`${environment.apiBasePath}/orders/start-shipping`, {})
+      .subscribe({
+        next: () => this.errorService.handleSuccess(`Successfully started order shipping job`),
+        error: (err) => this.errorService.handle(err)
+      });
+  }
 }

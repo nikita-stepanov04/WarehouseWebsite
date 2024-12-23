@@ -2,6 +2,7 @@
 
 ![ASP.NET](https://img.shields.io/badge/ASP.NET-512BD4?style=for-the-badge&logo=dotnet&logoColor=white) 
 ![Entity Framework](https://img.shields.io/badge/Entity%20Framework-512BD4?style=for-the-badge&logo=entity-framework&logoColor=white) 
+![Angular](https://img.shields.io/badge/Angular-ad0c00?style=for-the-badge&logo=entity-framework&logoColor=white)
 
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white) 
 ![Azure Blob Storage](https://img.shields.io/badge/Azure%20Blob%20Storage-0078D4?style=for-the-badge&logo=microsoft-azure&logoColor=white) 
@@ -35,13 +36,21 @@
         Once you have built and started the Docker containers, the swagger ui will be available at:
 
         - **Localhost**: <http://localhost:8080/swagger/index.html>
+         
+       Frontend will be available at:
 
+        - **Localhost**: <http://localhost:8081>
+       
+        Smtp server client will be available at:
+
+        - **Localhost**: <http://localhost:8025>
+  
 2. **Log in** with one of the predefined admin accounts and get an access token:
     - **Email**: *admin1@mail.com*, **Password**: *password*
     - **Email**: *admin2@mail.com*, **Password**: *password*
     - **Email**: *admin3@mail.com*, **Password**: *password*
     
- 3. **Set the authorization header**in Swagger to the value: Bearer \$\{access token}
+ 3. **Set the authorization header** in Swagger to the value: Bearer \$\{access token}
 
    
 

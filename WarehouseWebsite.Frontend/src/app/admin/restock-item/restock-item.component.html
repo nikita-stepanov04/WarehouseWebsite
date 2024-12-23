@@ -1,6 +1,7 @@
 <app-main-template>
   <div class="row justify-content-center mt-5">
     <div class="col-6 main-block border shadow-lg">
+      <h4 class="text-center">Restock item</h4>
       <form class="form" [formGroup]="restockForm" (ngSubmit)="onSubmit()">
 
         <div class="mb-3">
@@ -22,8 +23,11 @@
         <div class="d-grid mt-4 mb-2">
           <button class="btn btn-primary" [disabled]="restockForm.invalid">Restock</button>
         </div>
-
       </form>
+
+      <div class="d-grid mt-4 mb-2">
+        <button class="btn btn-primary" (click)="startShipping()">Start shipping</button>
+      </div>
     </div>
   </div>
 </app-main-template>

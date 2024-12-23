@@ -96,12 +96,10 @@ namespace WarehouseWebsite.Application.Services
                     if (missingItem.Missing > addQuantity)
                     {
                         missingItem.Missing -= addQuantity;
-                        addQuantity = 0;
                     }
                     else
                     {
                         _missingItemRepository.Remove(missingItem);
-                        addQuantity -= missingItem.Missing;
                     }
                 }
                 
